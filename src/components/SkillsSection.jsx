@@ -1,36 +1,55 @@
 import React from 'react';
 
 const skills = [
-  { category: 'Design', items: ['UI/UX', 'Figma', 'Responsive Design', 'Prototyping', 'Wireframing'] },
-  { category: 'Engineering', items: ['HTML', 'CSS', 'JavaScript', 'React', 'Tailwind CSS'] }
+  { 
+    category: 'DESIGN', 
+    color: 'bg-accent-1',
+    items: [
+      'Figma', 'UI Design', 'UX Design', 'Wireframing', 
+      'Prototyping', 'Design Systems', 'Typography', 
+      'Visual Hierarchy', 'Interaction Design'
+    ] 
+  },
+  { 
+    category: 'DEVELOPMENT', 
+    color: 'bg-primary',
+    textColor: 'text-white',
+    items: [
+      'HTML', 'CSS', 'Bootstrap', 'JavaScript', 
+      'React', 'React Router', 'Git', 'GitHub'
+    ] 
+  }
 ];
 
 export default function SkillsSection() {
   return (
-    <section 
-      id="skills" 
-      className="relative w-full z-10 py-32 px-4 md:px-8 min-h-[80vh] flex flex-col items-center justify-center"
-    >
-      <div className="max-w-5xl mx-auto w-full">
+    <section id="skills" className="w-full py-24 px-4 md:px-8 bg-white text-black border-t-[3px] border-black">
+      <div className="max-w-7xl mx-auto">
         
-        <div className="mb-16 inline-flex items-center gap-3">
-          <span className="w-8 h-[1px] bg-white/60" />
-          <h2 className="text-sm font-mono font-bold tracking-widest text-white uppercase drop-shadow-md">
-            Skills & Arsenal
+        <div className="flex flex-col items-center mb-16">
+          <span className="neo-tag bg-accent-2 text-white mb-6 transform -rotate-2">
+            ARSENAL
+          </span>
+          <h2 className="font-display font-black text-6xl sm:text-7xl uppercase text-center" style={{ textShadow: '4px 4px 0px var(--color-accent-1)' }}>
+            MY TOOLKIT
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-24">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
           {skills.map((group, idx) => (
-            <div key={idx} className="flex flex-col gap-6">
-              <h3 className="font-editorial text-3xl text-white/90 drop-shadow-sm border-b border-white/20 pb-4">
+            <div 
+              key={idx} 
+              className={`neo-card ${group.color} ${group.textColor || 'text-black'} p-8 sm:p-12`}
+            >
+              <h3 className="font-display font-black text-4xl uppercase border-b-4 border-black pb-4 mb-8">
                 {group.category}
               </h3>
-              <div className="flex flex-wrap gap-3">
+              
+              <div className="flex flex-wrap gap-4">
                 {group.items.map((skill, i) => (
                   <div 
                     key={i}
-                    className="px-5 py-2.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white font-medium hover:bg-white/20 hover:scale-105 transition-all cursor-default shadow-lg"
+                    className="neo-tag bg-white text-black text-lg py-2 px-6 shadow-[4px_4px_0px_#000] hover:-translate-y-1 transition-transform cursor-default"
                   >
                     {skill}
                   </div>

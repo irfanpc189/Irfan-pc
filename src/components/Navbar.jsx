@@ -1,51 +1,38 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Mail } from 'lucide-react';
+import React from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 export default function Navbar() {
-  const [activeSection, setActiveSection] = useState('hero');
-  const [isHovered, setIsHovered] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
-  const hoverTimeoutRef = useRef(null);
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  // Intersection Observer for Active Link
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setActiveSection(entry.target.id);
+  const handleNavClick = (id) => {
+    if (id === 'about') {
+      if (location.pathname !== '/about') {
+        navigate('/about');
+      } else {
+        if (window.lenis && !window.lenis.isDestroyed) {
+          window.lenis.scrollTo(0);
+        } else {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      }
+      return;
+    }
+
+    // For other links: 'hero' (WORK), 'skills', 'projects'
+    if (location.pathname !== '/') {
+      navigate('/');
+      setTimeout(() => {
+        const element = document.getElementById(id);
+        if (element) {
+          if (window.lenis && !window.lenis.isDestroyed) {
+            window.lenis.scrollTo(element);
+          } else {
+            element.scrollIntoView({ behavior: 'smooth' });
           }
-        });
-      },
-      { rootMargin: '-40% 0px -60% 0px' }
-    );
-
-    const sectionIds = ['hero', 'about', 'skills', 'projects', 'contact'];
-    sectionIds.forEach((id) => {
-      const element = document.getElementById(id);
-      if (element) observer.observe(element);
-    });
-
-    return () => {
-      observer.disconnect();
-    };
-  }, []);
-
-  // Scroll Listener for Dynamic State
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY >= 100);
-    };
-    
-    // Initial check
-    handleScroll();
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const scrollToSection = (id) => {
-    try {
+        }
+      }, 150);
+    } else {
       const element = document.getElementById(id);
       if (element) {
         if (window.lenis && !window.lenis.isDestroyed) {
@@ -54,175 +41,71 @@ export default function Navbar() {
           element.scrollIntoView({ behavior: 'smooth' });
         }
       }
-    } catch (err) {
-      const element = document.getElementById(id);
-      if (element) element.scrollIntoView({ behavior: 'smooth' });
     }
-    setActiveSection(id);
-    setIsHovered(false);
   };
 
   const navLinks = [
-    { id: 'hero', label: 'Work' },
-    { id: 'about', label: 'About' },
-    { id: 'skills', label: 'Skills' },
-    { id: 'projects', label: 'Projects' }
+    { id: 'hero', label: 'WORK' },
+    { id: 'about', label: 'ABOUT' },
+    { id: 'skills', label: 'SKILLS' },
+    { id: 'projects', label: 'PROJECTS' }
   ];
 
-  const handleMouseEnter = () => {
-    if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
-    setIsHovered(true);
+  const isActive = (id) => {
+    if (id === 'about') return location.pathname === '/about';
+    if (id === 'hero') return location.pathname === '/';
+    return false;
   };
-
-  const handleMouseLeave = () => {
-    hoverTimeoutRef.current = setTimeout(() => {
-      setIsHovered(false);
-    }, 150);
-  };
-
-  // The capsule is fully expanded if we are at the top OR if it is hovered.
-  const isExpanded = !isScrolled || isHovered;
 
   return (
-    <header
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      onClick={() => setIsHovered(!isHovered)}
-      style={{
-        position: 'fixed',
-        top: '20px',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        zIndex: 1000,
-        height: '48px', // STRICT Height constraint
-        width: 'fit-content',
-        maxWidth: '600px', // Prevent screen expansion
-        background: 'rgba(255, 255, 255, 0.15)',
-        backdropFilter: 'blur(24px)',
-        WebkitBackdropFilter: 'blur(24px)',
-        border: '1px solid rgba(255, 255, 255, 0.25)',
-        borderRadius: '9999px', // Pill shape
-        padding: '6px 16px 6px 6px', // 6px on left for avatar, 16px on right for balance
-        display: 'flex',
-        alignItems: 'center',
-        gap: '12px',
-        cursor: 'pointer',
-        boxShadow: '0 10px 40px -10px rgba(0,0,0,0.3)',
-        boxSizing: 'border-box'
-      }}
-    >
-      {/* 32x32 Avatar */}
+    <header className="fixed top-6 left-1/2 -translate-x-1/2 z-[1000] w-full max-w-[800px] flex flex-wrap items-center justify-center gap-2 px-4">
+      
+      {/* Main Nav Block */}
       <div 
-        style={{
-          width: '32px',
-          height: '32px',
-          borderRadius: '50%',
-          overflow: 'hidden',
-          flexShrink: 0,
-          background: '#d99b1c', // Fallback color
-          border: '1px solid rgba(255,255,255,0.15)'
-        }}
+        className="flex items-center bg-white border-[3px] border-black px-2 py-2 shadow-[8px_8px_0px_#000] hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-[4px_4px_0px_#000] transition-all duration-200"
       >
-        <img 
-          src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150&auto=format&fit=crop" 
-          alt="Profile" 
-          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-        />
-      </div>
-
-      <div style={{ display: 'flex', alignItems: 'center' }}>
-        
-        {/* Scrolled/Collapsed State Content ("Available for work") */}
-        <div 
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            transition: 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
-            opacity: isExpanded ? 0 : 1,
-            maxWidth: isExpanded ? '0px' : '220px',
-            marginRight: isExpanded ? '0px' : '4px'
-          }}
-        >
-          <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '13px', fontWeight: 500, marginRight: '12px' }}>
-            Available for work
-          </span>
-          <span style={{ position: 'relative', display: 'flex', height: '8px', width: '8px', marginRight: '4px' }}>
-            <span className="animate-ping" style={{ position: 'absolute', height: '100%', width: '100%', borderRadius: '50%', backgroundColor: '#f4d068', opacity: 0.75 }}></span>
-            <span style={{ position: 'relative', height: '8px', width: '8px', borderRadius: '50%', backgroundColor: '#f4d068', border: '2px solid rgba(244,208,104,0.3)' }}></span>
-          </span>
-        </div>
-
-        {/* Top/Expanded State Content (Links + CTA) */}
-        <div 
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '4px',
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            transition: 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
-            opacity: isExpanded ? 1 : 0,
-            maxWidth: isExpanded ? '500px' : '0px'
-          }}
-        >
+        {/* Links */}
+        <div className="flex items-center gap-1 sm:gap-2">
           {navLinks.map((link) => {
-            const isActive = activeSection === link.id;
+            const active = isActive(link.id);
             return (
               <button
                 key={link.id}
-                onClick={(e) => { e.stopPropagation(); scrollToSection(link.id); }}
-                className="hover-btn"
-                style={{
-                  padding: '6px 12px',
-                  borderRadius: '9999px',
-                  fontSize: '13px',
-                  fontWeight: 500,
-                  transition: 'all 0.3s ease',
-                  border: isActive ? '1px solid rgba(255,255,255,0.3)' : '1px solid transparent',
-                  backgroundColor: isActive ? 'rgba(255,255,255,0.1)' : 'transparent',
-                  color: isActive ? '#ffffff' : 'rgba(255,255,255,0.7)',
-                  cursor: 'pointer'
-                }}
+                onClick={() => handleNavClick(link.id)}
+                className={`px-4 py-2 text-sm font-black tracking-widest uppercase transition-all duration-200 border-[3px] cursor-pointer ${
+                  active 
+                    ? 'bg-primary text-white border-black shadow-[2px_2px_0px_#000]' 
+                    : 'hover:bg-accent-1 hover:border-black text-black border-transparent'
+                }`}
               >
                 {link.label}
               </button>
             );
           })}
-
-          <div style={{ width: '1px', height: '16px', backgroundColor: 'rgba(255,255,255,0.2)', margin: '0 4px' }} />
-
-          <button
-            onClick={(e) => { e.stopPropagation(); scrollToSection('contact'); }}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              backgroundColor: '#ffffff',
-              color: '#121814',
-              padding: '6px 14px',
-              borderRadius: '9999px',
-              fontSize: '13px',
-              fontWeight: 700,
-              cursor: 'pointer',
-              border: 'none',
-              marginLeft: '4px'
-            }}
-          >
-            <Mail size={14} />
-            <span>Work with me</span>
-          </button>
         </div>
       </div>
+
+      {/* Social Links */}
+      <a 
+        href="https://linkedin.com"
+        target="_blank"
+        rel="noreferrer"
+        className="hidden md:flex items-center gap-2 bg-primary text-white border-[3px] border-black px-4 py-3 shadow-[8px_8px_0px_#000] hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-[4px_4px_0px_#000] transition-all duration-200 uppercase text-sm font-black tracking-wider"
+      >
+        <span className="font-bold">in</span>
+        LINKEDIN
+      </a>
       
-      {/* Inline styles for hover state of buttons without relying on Tailwind classes that might get purged */}
-      <style>{`
-        .hover-btn:hover {
-          color: #ffffff !important;
-          background-color: rgba(255,255,255,0.1) !important;
-        }
-      `}</style>
+      <a 
+        href="https://instagram.com"
+        target="_blank"
+        rel="noreferrer"
+        className="hidden md:flex items-center gap-2 bg-primary text-white border-[3px] border-black px-4 py-3 shadow-[8px_8px_0px_#000] hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-[4px_4px_0px_#000] transition-all duration-200 uppercase text-sm font-black tracking-wider"
+      >
+        <span className="font-bold">ig</span>
+        INSTAGRAM
+      </a>
+
     </header>
   );
 }

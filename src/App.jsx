@@ -1,19 +1,19 @@
 import React, { useEffect } from 'react';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import Lenis from '@studio-freight/lenis';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-import PersistentBackground from './components/PersistentBackground';
 import Navbar from './components/Navbar';
-import HeroScene from './components/HeroScene';
-import AboutSection from './components/AboutSection';
-import SkillsSection from './components/SkillsSection';
-import ProjectsSection from './components/ProjectsSection';
-import ContactSection from './components/ContactSection';
+import HomePage from './pages/HomePage';
+import AboutPage from './pages/AboutPage';
+import ContactPage from './pages/ContactPage';
 
 gsap.registerPlugin(ScrollTrigger);
 
 export default function App() {
+  const location = useLocation();
+
   // Initialize Lenis Smooth Inertial Scrolling & GSAP ScrollTrigger Sync
   useEffect(() => {
     const lenis = new Lenis({
@@ -26,9 +26,7 @@ export default function App() {
       smoothTouch: false,
     });
 
-    // Expose lenis globally for navigation scroll
     window.lenis = lenis;
-
     lenis.on('scroll', ScrollTrigger.update);
 
     gsap.ticker.add((time) => {
@@ -42,26 +40,30 @@ export default function App() {
     };
   }, []);
 
+  // Scroll to top on route change
+  useEffect(() => {
+    if (window.lenis) {
+      window.lenis.scrollTo(0, { immediate: true });
+    } else {
+      window.scrollTo(0, 0);
+    }
+  }, [location.pathname]);
+
   return (
-    <>
-      {/* Persistent Sunflower Atmosphere Layer */}
-      <PersistentBackground />
+    <div className="relative min-h-screen font-body bg-grid">
+      
+      {/* Navigation Bar */}
+      <Navbar />
 
-      <div className="relative min-h-screen text-main selection:bg-amber-400 selection:text-white font-body">
-        
-        {/* Navigation Bar */}
-        <Navbar />
+      {/* Main Routes */}
+      <main className={`relative z-10 ${location.pathname === '/' ? '' : 'pt-24'}`}>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+        </Routes>
+      </main>
 
-        {/* Main Narrative Sections */}
-        <main className="relative z-10">
-          <HeroScene />
-          <AboutSection />
-          <SkillsSection />
-          <ProjectsSection />
-        </main>
-
-        <ContactSection />
-      </div>
-    </>
+    </div>
   );
 }
