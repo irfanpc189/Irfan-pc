@@ -4,45 +4,33 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const projects = [
-  {
-    id: '01',
-    title: 'RE-STORE',
-    category: 'DIY REPAIR & UPCYCLING',
-    year: '2026',
-    bgColor: 'bg-[#0047FF]',
-    textColor: 'text-white',
-    description: 'A community-driven platform promoting sustainable living through repair guides, upcycling tutorials, and a marketplace.',
-    img: 'https://images.unsplash.com/photo-1544396821-4dd40b938ad3?q=80&w=1600&auto=format&fit=crop',
-  },
-  {
-    id: '02',
-    title: 'NEXUS UI',
-    category: 'DESIGN SYSTEM & COMPONENTS',
-    year: '2025',
-    bgColor: 'bg-[#FFDE59]',
-    textColor: 'text-black',
-    description: 'High-performance brutalist component library built for rapid prototyping and accessibility.',
-    img: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=1600&auto=format&fit=crop',
-  },
-  {
-    id: '03',
-    title: 'CYBER ARCHIVE',
-    category: 'WEB3 PLATFORM',
-    year: '2025',
-    bgColor: 'bg-[#FF6B6B]',
-    textColor: 'text-white',
-    description: 'Decentralized digital art archive with dynamic layout grids and custom audio-visual interactions.',
-    img: 'https://images.unsplash.com/photo-1552346154-21d32810baa3?q=80&w=1600&auto=format&fit=crop',
-  },
-];
+import { useState } from 'react';
+import { supabase } from '../lib/supabase';
+
+// The hardcoded projects have been removed and are now fetched dynamically from Supabase
 
 export default function ProjectsSection() {
   const containerRef = useRef(null);
   const outerCardsRef = useRef([]); 
   const innerCardsRef = useRef([]); 
+  const [projects, setProjects] = useState([]);
 
   useEffect(() => {
+    async function fetchProjects() {
+      const { data } = await supabase
+        .from('projects')
+        .select('*')
+        .eq('published', true)
+        .order('sort_order', { ascending: true });
+      
+      if (data) setProjects(data);
+    }
+    fetchProjects();
+  }, []);
+
+  useEffect(() => {
+    if (projects.length === 0) return;
+
     let triggers = [];
     const mm = gsap.matchMedia();
 
@@ -79,7 +67,7 @@ export default function ProjectsSection() {
     });
 
     return () => mm.revert();
-  }, []);
+  }, [projects]);
 
   return (
     <section ref={containerRef} id="projects" className="relative w-full py-16 px-4 md:px-12 bg-white text-black">
@@ -104,7 +92,7 @@ export default function ProjectsSection() {
             >
               <article 
                 ref={(el) => (innerCardsRef.current[index] = el)}
-                className={`work-card h-full w-full origin-top ${project.bgColor} ${project.textColor} border-4 border-black p-6 md:p-10 shadow-[12px_12px_0px_#000] transition-shadow duration-300 flex flex-col lg:flex-row overflow-hidden`}
+                className={`work-card h-full w-full origin-top bg-[#FFDE59] text-black border-4 border-black p-6 md:p-10 shadow-[12px_12px_0px_#000] transition-shadow duration-300 flex flex-col lg:flex-row overflow-hidden`}
               >
                 
                 {/* Main Content Layout */}
@@ -113,10 +101,10 @@ export default function ProjectsSection() {
                   {/* Top Card Badges */}
                   <div className="flex justify-between items-center mb-8 border-b-2 border-black pb-4">
                     <span className="bg-white text-black font-bold border-2 border-black px-3 py-1 text-sm uppercase shadow-[3px_3px_0px_#000]">
-                      {project.category}
+                      {project.tags?.[0] || 'PROJECT'}
                     </span>
                     <span className="bg-black text-white font-mono font-bold px-3 py-1 text-sm border-2 border-black">
-                      {project.year}
+                      {new Date(project.updated_at).getFullYear()}
                     </span>
                   </div>
 
@@ -128,20 +116,24 @@ export default function ProjectsSection() {
                       {project.description}
                     </p>
                     <div className="mt-4">
-                      <button className="bg-black text-white hover:bg-white hover:text-black font-black uppercase text-lg px-6 py-3 border-2 border-black shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all">
-                        VIEW CASE STUDY ↗
-                      </button>
+                      {project.live_url && (
+                        <a href={project.live_url} target="_blank" rel="noreferrer" className="inline-block bg-black text-white hover:bg-white hover:text-black font-black uppercase text-lg px-6 py-3 border-2 border-black shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all">
+                          VIEW CASE STUDY ↗
+                        </a>
+                      )}
                     </div>
                   </div>
                 </div>
 
                 {/* Project Preview Image */}
                 <div className="w-full lg:w-1/2 h-64 lg:h-auto border-4 border-black overflow-hidden bg-gray-200 shadow-[6px_6px_0px_#000]">
-                  <img
-                    src={project.img}
-                    alt={project.title}
-                    className="w-full h-full object-cover filter contrast-125 grayscale-[20%]"
-                  />
+                  {project.image_url && (
+                    <img
+                      src={project.image_url}
+                      alt={project.title}
+                      className="w-full h-full object-cover filter contrast-125 grayscale-[20%]"
+                    />
+                  )}
                 </div>
 
               </article>

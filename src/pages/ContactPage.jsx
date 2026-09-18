@@ -1,7 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Mail, ArrowUpRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { supabase } from '../lib/supabase';
+
 export default function ContactPage() {
+  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+  const [status, setStatus] = useState('idle');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setStatus('submitting');
+    const { error } = await supabase.from('messages').insert([formData]);
+    if (!error) {
+      setStatus('success');
+      setFormData({ name: '', email: '', message: '' });
+    } else {
+      setStatus('error');
+    }
+  };
   return (
     <div className="w-full min-h-[85vh] bg-primary text-white py-12 px-4 md:px-8 flex flex-col justify-center items-center relative">
       
@@ -39,13 +55,52 @@ export default function ContactPage() {
             <span className="inline-block bg-accent-2 text-white px-2 mt-2 transform rotate-1 border-2 border-black shadow-[4px_4px_0px_#000]">Let's create something meaningful.</span>
           </p>
 
-          <a 
-            href="mailto:pcirfan918@gmail.com"
-            className="group neo-btn bg-accent-1 text-black text-2xl py-6 px-12 rounded-full mb-20"
-          >
-            <span>START A CONVERSATION</span>
-            <ArrowUpRight className="w-8 h-8 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-          </a>
+          <form onSubmit={handleSubmit} className="w-full max-w-2xl flex flex-col gap-6 mb-20 text-left">
+            {status === 'success' && (
+              <div className="bg-green-100 text-green-800 border-[3px] border-black p-4 text-center font-bold shadow-[4px_4px_0px_#000]">
+                Message sent successfully!
+              </div>
+            )}
+            {status === 'error' && (
+              <div className="bg-red-100 text-red-800 border-[3px] border-black p-4 text-center font-bold shadow-[4px_4px_0px_#000]">
+                Failed to send message. Please try again.
+              </div>
+            )}
+            <div className="flex flex-col sm:flex-row gap-6 w-full">
+              <input 
+                type="text" 
+                placeholder="YOUR NAME" 
+                required 
+                value={formData.name}
+                onChange={e => setFormData({...formData, name: e.target.value})}
+                className="w-full sm:w-1/2 p-4 bg-white text-black border-[3px] border-black font-bold uppercase shadow-[4px_4px_0px_#000] focus:outline-none focus:-translate-y-1 focus:shadow-[6px_6px_0px_#000] transition-all"
+              />
+              <input 
+                type="email" 
+                placeholder="YOUR EMAIL" 
+                required 
+                value={formData.email}
+                onChange={e => setFormData({...formData, email: e.target.value})}
+                className="w-full sm:w-1/2 p-4 bg-white text-black border-[3px] border-black font-bold uppercase shadow-[4px_4px_0px_#000] focus:outline-none focus:-translate-y-1 focus:shadow-[6px_6px_0px_#000] transition-all"
+              />
+            </div>
+            <textarea 
+              placeholder="TELL ME ABOUT YOUR PROJECT" 
+              required 
+              rows={4}
+              value={formData.message}
+              onChange={e => setFormData({...formData, message: e.target.value})}
+              className="w-full p-4 bg-white text-black border-[3px] border-black font-bold uppercase shadow-[4px_4px_0px_#000] focus:outline-none focus:-translate-y-1 focus:shadow-[6px_6px_0px_#000] transition-all"
+            />
+            <button 
+              type="submit"
+              disabled={status === 'submitting'}
+              className="group neo-btn flex items-center justify-center bg-accent-1 text-black text-2xl py-6 px-12 rounded-full mx-auto disabled:opacity-50"
+            >
+              <span>{status === 'submitting' ? 'SENDING...' : 'SEND MESSAGE'}</span>
+              <ArrowUpRight className="w-8 h-8 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform ml-2" />
+            </button>
+          </form>
 
           {/* Social Links inside card */}
           <div className="w-full flex flex-col sm:flex-row justify-between items-center border-t-4 border-black pt-8 mt-4 gap-6">

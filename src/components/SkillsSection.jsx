@@ -1,27 +1,48 @@
-import React from 'react';
-
-const skills = [
-  { 
-    category: 'DESIGN', 
-    color: 'bg-accent-1',
-    items: [
-      'Figma', 'UI Design', 'UX Design', 'Wireframing', 
-      'Prototyping', 'Design Systems', 'Typography', 
-      'Visual Hierarchy', 'Photoshop', 'Illustrator'
-    ] 
-  },
-  { 
-    category: 'DEVELOPMENT', 
-    color: 'bg-primary',
-    textColor: 'text-white',
-    items: [
-      'HTML', 'CSS', 'Bootstrap', 'JavaScript', 
-      'React', 'Git', 'GitHub'
-    ] 
-  }
-];
+import React, { useState, useEffect } from 'react';
+import { supabase } from '../lib/supabase';
 
 export default function SkillsSection() {
+  const [fetchedSkills, setFetchedSkills] = useState([]);
+
+  useEffect(() => {
+    async function fetchSkills() {
+      const { data } = await supabase.from('site_content').select('*').eq('key', 'skills_list').single();
+      if (data && data.value && data.value.text) {
+        const skillsArray = data.value.text
+          .split(',')
+          .map(s => s.trim())
+          .filter(Boolean);
+        setFetchedSkills(skillsArray);
+      }
+    }
+    fetchSkills();
+  }, []);
+
+  const defaultSkills = [
+    { 
+      category: 'DESIGN', 
+      color: 'bg-accent-1',
+      items: [
+        'Figma', 'UI Design', 'UX Design', 'Wireframing', 
+        'Prototyping', 'Design Systems', 'Typography', 
+        'Visual Hierarchy', 'Photoshop', 'Illustrator'
+      ] 
+    },
+    { 
+      category: 'DEVELOPMENT', 
+      color: 'bg-primary',
+      textColor: 'text-white',
+      items: [
+        'HTML', 'CSS', 'Bootstrap', 'JavaScript', 
+        'React', 'Git', 'GitHub'
+      ] 
+    }
+  ];
+
+  const displayGroups = fetchedSkills.length > 0 
+    ? [{ category: 'ALL SKILLS', color: 'bg-primary', textColor: 'text-white', items: fetchedSkills }]
+    : defaultSkills;
+
   return (
     <section id="skills" className="w-full py-24 px-4 md:px-8 bg-white text-black border-t-[3px] border-black">
       <div className="max-w-7xl mx-auto">
@@ -36,7 +57,7 @@ export default function SkillsSection() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
-          {skills.map((group, idx) => (
+          {displayGroups.map((group, idx) => (
             <div 
               key={idx} 
               className={`neo-card ${group.color} ${group.textColor || 'text-black'} p-8 sm:p-12`}

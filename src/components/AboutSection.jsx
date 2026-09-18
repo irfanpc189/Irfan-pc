@@ -1,6 +1,18 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { supabase } from '../lib/supabase';
 
 export default function AboutSection() {
+  const [bio, setBio] = useState("I design like a developer and code like a designer. Which means I argue with myself until the pixels behave.");
+
+  useEffect(() => {
+    async function fetchBio() {
+      const { data } = await supabase.from('site_content').select('*').eq('key', 'about_bio').single();
+      if (data && data.value && data.value.text) {
+        setBio(data.value.text);
+      }
+    }
+    fetchBio();
+  }, []);
   return (
     <section 
       id="about-home"
@@ -19,7 +31,7 @@ export default function AboutSection() {
             className="text-4xl sm:text-5xl md:text-6xl font-display font-black text-black leading-tight max-w-4xl uppercase"
             style={{ textShadow: '2px 2px 0px var(--color-primary)' }}
           >
-            I design like a developer and code like a designer. Which means I argue with myself until the pixels behave.
+            {bio}
           </h3>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">

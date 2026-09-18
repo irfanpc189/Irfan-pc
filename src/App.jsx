@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, lazy, Suspense } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import Lenis from '@studio-freight/lenis';
 import gsap from 'gsap';
@@ -8,6 +8,18 @@ import Navbar from './components/Navbar';
 import HomePage from './pages/HomePage';
 import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
+
+// Admin Pages (Lazy Loaded)
+const ProtectedRoute = lazy(() => import('./components/admin/ProtectedRoute'));
+const AdminLayout = lazy(() => import('./components/admin/AdminLayout'));
+const LoginPage = lazy(() => import('./pages/admin/LoginPage'));
+const DashboardPage = lazy(() => import('./pages/admin/DashboardPage'));
+const ProjectsPage = lazy(() => import('./pages/admin/ProjectsPage'));
+const ProjectForm = lazy(() => import('./pages/admin/ProjectForm'));
+const BlogPage = lazy(() => import('./pages/admin/BlogPage'));
+const BlogPostForm = lazy(() => import('./pages/admin/BlogPostForm'));
+const MessagesPage = lazy(() => import('./pages/admin/MessagesPage'));
+const SettingsPage = lazy(() => import('./pages/admin/SettingsPage'));
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -56,11 +68,36 @@ export default function App() {
       <Navbar />
 
       {/* Main Routes */}
-      <main className={`relative z-10 ${location.pathname === '/' ? '' : 'pt-24'}`}>
+      <main className={`relative z-10 ${location.pathname === '/' || location.pathname.startsWith('/admin') ? '' : 'pt-24'}`}>
         <Routes>
+          {/* Public Routes */}
           <Route path="/" element={<HomePage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<ContactPage />} />
+
+          {/* Admin Routes */}
+          <Route path="/admin/login" element={
+            <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
+              <LoginPage />
+            </Suspense>
+          } />
+          <Route path="/admin" element={
+            <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
+              <ProtectedRoute />
+            </Suspense>
+          }>
+            <Route element={<AdminLayout />}>
+              <Route index element={<DashboardPage />} />
+              <Route path="projects" element={<ProjectsPage />} />
+              <Route path="projects/new" element={<ProjectForm />} />
+              <Route path="projects/:id" element={<ProjectForm />} />
+              <Route path="blog" element={<BlogPage />} />
+              <Route path="blog/new" element={<BlogPostForm />} />
+              <Route path="blog/:id" element={<BlogPostForm />} />
+              <Route path="messages" element={<MessagesPage />} />
+              <Route path="settings" element={<SettingsPage />} />
+            </Route>
+          </Route>
         </Routes>
       </main>
 

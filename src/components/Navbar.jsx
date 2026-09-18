@@ -57,6 +57,10 @@ export default function Navbar() {
     return false;
   };
 
+  if (location.pathname.startsWith('/admin')) {
+    return null;
+  }
+
   return (
     <header className="fixed top-6 left-1/2 -translate-x-1/2 z-[1000] w-full max-w-[800px] flex flex-wrap items-center justify-center gap-2 px-4">
       
