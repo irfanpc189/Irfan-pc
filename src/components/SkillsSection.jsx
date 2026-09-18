@@ -7,7 +7,7 @@ const skills = [
     items: [
       'Figma', 'UI Design', 'UX Design', 'Wireframing', 
       'Prototyping', 'Design Systems', 'Typography', 
-      'Visual Hierarchy', 'Interaction Design'
+      'Visual Hierarchy', 'Photoshop', 'Illustrator'
     ] 
   },
   { 
@@ -16,7 +16,7 @@ const skills = [
     textColor: 'text-white',
     items: [
       'HTML', 'CSS', 'Bootstrap', 'JavaScript', 
-      'React', 'React Router', 'Git', 'GitHub'
+      'React', 'Git', 'GitHub'
     ] 
   }
 ];

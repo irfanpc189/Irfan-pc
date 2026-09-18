@@ -380,3 +380,12 @@ html, body {
 .group:hover .group-hover\:translate-x-1 { transform: translateX(4px); }
 .group:hover .group-hover\:-translate-y-1 { transform: translateY(-4px); }
 .group:hover .group-hover\:scale-110 { transform: scale(1.1); }
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-15px); }
+  100% { transform: translateY(0px); }
+}
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}

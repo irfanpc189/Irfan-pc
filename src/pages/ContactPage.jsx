@@ -1,9 +1,20 @@
 import React from 'react';
 import { Mail, ArrowUpRight } from 'lucide-react';
-
+import { Link } from 'react-router-dom';
 export default function ContactPage() {
   return (
-    <div className="w-full min-h-[85vh] bg-primary text-white py-12 px-4 md:px-8 flex flex-col justify-center items-center">
+    <div className="w-full min-h-[85vh] bg-primary text-white py-12 px-4 md:px-8 flex flex-col justify-center items-center relative">
+      
+      {/* Back Button */}
+      <Link 
+        to="/" 
+        aria-label="Back to Home"
+        className="fixed z-[999] bg-accent-2 text-black w-12 h-12 md:w-14 md:h-14 flex items-center justify-center border-4 border-black shadow-[4px_4px_0px_#000] hover:shadow-[2px_2px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] transition-all cursor-pointer group"
+        style={{ top: '24px', left: '24px' }}
+      >
+        <span className="text-2xl md:text-3xl font-black group-hover:-translate-x-1 transition-transform">←</span>
+      </Link>
+
       <div className="max-w-5xl mx-auto w-full relative">
         
         {/* Decorative blocks */}
@@ -40,14 +51,14 @@ export default function ContactPage() {
           <div className="w-full flex flex-col sm:flex-row justify-between items-center border-t-4 border-black pt-8 mt-4 gap-6">
             <p className="font-display font-black text-2xl">FIND ME ON:</p>
             <div className="flex gap-4">
-              <a href="#" className="neo-card bg-primary text-white p-4 font-bold tracking-widest uppercase hover:-translate-y-2 hover:bg-black transition-all">
+              <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="neo-card bg-primary text-white p-4 font-bold tracking-widest uppercase hover:-translate-y-2 hover:bg-black transition-all">
                 GITHUB
               </a>
-              <a href="#" className="neo-card bg-primary text-white p-4 font-bold tracking-widest uppercase hover:-translate-y-2 hover:bg-black transition-all">
+              <a href="https://www.linkedin.com/in/irfan-p-c-6011813b1" target="_blank" rel="noopener noreferrer" className="neo-card bg-primary text-white p-4 font-bold tracking-widest uppercase hover:-translate-y-2 hover:bg-black transition-all">
                 LINKEDIN
               </a>
-              <a href="#" className="neo-card bg-primary text-white p-4 font-bold tracking-widest uppercase hover:-translate-y-2 hover:bg-black transition-all">
-                TWITTER
+              <a href="https://www.instagram.com/irf4n_.___?stkn=ZGViZHJmMmJ4N29v&utm_source=qr" target="_blank" rel="noopener noreferrer" className="neo-card bg-primary text-white p-4 font-bold tracking-widest uppercase hover:-translate-y-2 hover:bg-black transition-all">
+                INSTAGRAM
               </a>
             </div>
           </div>
@@ -56,7 +67,7 @@ export default function ContactPage() {
 
         <div className="w-full text-center mt-20 pb-4">
           <p className="text-white text-lg font-display font-bold uppercase tracking-widest">
-            © {new Date().getFullYear()} Irfan PC. Designed & Built manually.
+            © {new Date().getFullYear()} Irfan PC.
           </p>
         </div>
 

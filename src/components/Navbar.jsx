@@ -87,7 +87,7 @@ export default function Navbar() {
 
       {/* Social Links */}
       <a 
-        href="https://linkedin.com"
+        href="https://www.linkedin.com/in/irfan-p-c-6011813b1"
         target="_blank"
         rel="noreferrer"
         className="hidden md:flex items-center gap-2 bg-primary text-white border-[3px] border-black px-4 py-3 shadow-[8px_8px_0px_#000] hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-[4px_4px_0px_#000] transition-all duration-200 uppercase text-sm font-black tracking-wider"
@@ -97,7 +97,7 @@ export default function Navbar() {
       </a>
       
       <a 
-        href="https://instagram.com"
+        href="https://www.instagram.com/irf4n_.___?stkn=ZGViZHJmMmJ4N29v&utm_source=qr"
         target="_blank"
         rel="noreferrer"
         className="hidden md:flex items-center gap-2 bg-primary text-white border-[3px] border-black px-4 py-3 shadow-[8px_8px_0px_#000] hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-[4px_4px_0px_#000] transition-all duration-200 uppercase text-sm font-black tracking-wider"

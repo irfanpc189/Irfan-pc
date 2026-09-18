@@ -1,108 +1,153 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const projects = [
   {
-    id: 1,
-    title: 'Re-Store',
-    category: 'DIY Repair & Upcycling',
+    id: '01',
+    title: 'RE-STORE',
+    category: 'DIY REPAIR & UPCYCLING',
     year: '2026',
-    description: 'A community-driven platform promoting sustainable living through repair guides, upcycling tutorials, and a marketplace for refurbished goods.',
-    image: 'https://images.unsplash.com/photo-1544396821-4dd40b938ad3?q=80&w=1600&auto=format&fit=crop',
-    color: 'bg-primary'
+    bgColor: 'bg-[#0047FF]',
+    textColor: 'text-white',
+    description: 'A community-driven platform promoting sustainable living through repair guides, upcycling tutorials, and a marketplace.',
+    img: 'https://images.unsplash.com/photo-1544396821-4dd40b938ad3?q=80&w=1600&auto=format&fit=crop',
   },
   {
-    id: 2,
-    title: 'Houzing',
-    category: 'Real Estate Platform',
+    id: '02',
+    title: 'NEXUS UI',
+    category: 'DESIGN SYSTEM & COMPONENTS',
     year: '2025',
-    description: 'A modern real estate platform that simplifies property discovery with immersive virtual tours and seamless agent communication.',
-    image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=1600&auto=format&fit=crop',
-    color: 'bg-accent-1'
+    bgColor: 'bg-[#FFDE59]',
+    textColor: 'text-black',
+    description: 'High-performance brutalist component library built for rapid prototyping and accessibility.',
+    img: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=1600&auto=format&fit=crop',
   },
   {
-    id: 3,
-    title: 'Rexecommerce',
-    category: 'E-commerce Experience',
+    id: '03',
+    title: 'CYBER ARCHIVE',
+    category: 'WEB3 PLATFORM',
     year: '2025',
-    description: 'High-end streetwear and sneaker storefront featuring 3D product viewing and an optimized checkout funnel.',
-    image: 'https://images.unsplash.com/photo-1552346154-21d32810baa3?q=80&w=1600&auto=format&fit=crop',
-    color: 'bg-white'
+    bgColor: 'bg-[#FF6B6B]',
+    textColor: 'text-white',
+    description: 'Decentralized digital art archive with dynamic layout grids and custom audio-visual interactions.',
+    img: 'https://images.unsplash.com/photo-1552346154-21d32810baa3?q=80&w=1600&auto=format&fit=crop',
   },
-  {
-    id: 4,
-    title: 'Travel App',
-    category: 'Mobile Redesign',
-    year: '2024',
-    description: 'A complete redesign of a travel application focusing on seamless booking, interactive maps, and itinerary management.',
-    image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?q=80&w=1600&auto=format&fit=crop',
-    color: 'bg-accent-2'
-  },
-  {
-    id: 5,
-    title: 'CareHaven',
-    category: 'Senior Care Website',
-    year: '2024',
-    description: 'A compassionate, highly accessible web presence connecting families with trusted senior care professionals and facilities.',
-    image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?q=80&w=1600&auto=format&fit=crop',
-    color: 'bg-primary'
-  }
 ];
 
 export default function ProjectsSection() {
+  const containerRef = useRef(null);
+  const outerCardsRef = useRef([]); 
+  const innerCardsRef = useRef([]); 
+
+  useEffect(() => {
+    let triggers = [];
+    const mm = gsap.matchMedia();
+
+    mm.add("(min-width: 768px)", () => {
+      innerCardsRef.current.forEach((card, index) => {
+        if (!card) return;
+
+        // Skip scaling the last card
+        if (index < projects.length - 1) {
+          const t = gsap.to(card, {
+            scale: 0.9,
+            opacity: 0.6,
+            ease: 'none',
+            scrollTrigger: {
+              // Triggers as the next card stacks over
+              trigger: outerCardsRef.current[index + 1], 
+              start: 'top bottom-=100',
+              end: 'top top+=140',
+              scrub: true,
+            },
+          });
+          if (t.scrollTrigger) triggers.push(t.scrollTrigger);
+        }
+      });
+
+      const handleLoad = () => ScrollTrigger.refresh();
+      window.addEventListener("load", handleLoad);
+
+      return () => {
+        window.removeEventListener("load", handleLoad);
+        triggers.forEach((t) => t.kill());
+        triggers = [];
+      };
+    });
+
+    return () => mm.revert();
+  }, []);
+
   return (
-    <section id="projects" className="w-full py-24 px-4 md:px-8 bg-white text-black">
+    <section ref={containerRef} id="projects" className="relative w-full py-16 px-4 md:px-12 bg-white text-black">
       <div className="max-w-7xl mx-auto">
         
-        <div className="flex flex-col sm:flex-row justify-between items-end mb-16 border-b-4 border-black pb-8 gap-6">
-          <h2 className="font-display font-black text-6xl sm:text-8xl uppercase leading-none" style={{ textShadow: '4px 4px 0px var(--color-accent-1)' }}>
-            SELECTED<br/>WORKS
-          </h2>
-          <div className="neo-tag bg-black text-white text-xl py-3 px-6 transform rotate-2">
+        {/* Pinned Header */}
+        <div className="sticky top-4 z-50 bg-white border-4 border-black p-6 shadow-[8px_8px_0px_#000] mb-16 flex justify-between items-center">
+          <h2 className="font-display font-black text-4xl md:text-7xl uppercase tracking-tight">SELECTED WORKS</h2>
+          <span className="bg-black text-white px-4 py-2 font-mono font-bold text-lg hidden md:block border-2 border-black">
             2024 — 2026
-          </div>
+          </span>
         </div>
 
-        <div className="flex flex-col gap-24">
-          {projects.map((project, idx) => (
-            <article 
+        {/* Stacking Cards Container */}
+        <div className="relative flex flex-col gap-16 pb-32 max-w-6xl mx-auto">
+          {projects.map((project, index) => (
+            <div 
               key={project.id} 
-              className={`neo-card ${project.color} flex flex-col lg:flex-row overflow-hidden transform transition-transform duration-300 hover:-translate-y-2`}
+              ref={(el) => (outerCardsRef.current[index] = el)}
+              className="work-card-wrapper sticky w-full min-h-[70vh]"
+              style={{ top: `calc(140px + ${index * 20}px)`, zIndex: 20 + index }}
             >
-              <div className="w-full lg:w-1/2 p-8 sm:p-12 flex flex-col justify-between border-b-[3px] lg:border-b-0 lg:border-r-[3px] border-black">
+              <article 
+                ref={(el) => (innerCardsRef.current[index] = el)}
+                className={`work-card h-full w-full origin-top ${project.bgColor} ${project.textColor} border-4 border-black p-6 md:p-10 shadow-[12px_12px_0px_#000] transition-shadow duration-300 flex flex-col lg:flex-row overflow-hidden`}
+              >
                 
-                <div className="flex justify-between items-start mb-8">
-                  <span className="neo-tag bg-white text-black">{project.category}</span>
-                  <span className="neo-tag bg-black text-white font-mono">{project.year}</span>
+                {/* Main Content Layout */}
+                <div className="w-full lg:w-1/2 flex flex-col justify-between pr-0 lg:pr-8 mb-8 lg:mb-0">
+                  
+                  {/* Top Card Badges */}
+                  <div className="flex justify-between items-center mb-8 border-b-2 border-black pb-4">
+                    <span className="bg-white text-black font-bold border-2 border-black px-3 py-1 text-sm uppercase shadow-[3px_3px_0px_#000]">
+                      {project.category}
+                    </span>
+                    <span className="bg-black text-white font-mono font-bold px-3 py-1 text-sm border-2 border-black">
+                      {project.year}
+                    </span>
+                  </div>
+
+                  <div className="flex flex-col gap-6">
+                    <h3 className="font-display text-5xl md:text-7xl font-black tracking-tight uppercase">
+                      {project.title}
+                    </h3>
+                    <p className="text-lg md:text-xl font-bold leading-relaxed">
+                      {project.description}
+                    </p>
+                    <div className="mt-4">
+                      <button className="bg-black text-white hover:bg-white hover:text-black font-black uppercase text-lg px-6 py-3 border-2 border-black shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all">
+                        VIEW CASE STUDY ↗
+                      </button>
+                    </div>
+                  </div>
                 </div>
 
-                <div>
-                  <h3 className={`font-display font-black text-5xl sm:text-6xl uppercase mb-6 ${project.color === 'bg-primary' ? 'text-white' : 'text-black'}`}>
-                    {project.title}
-                  </h3>
-                  <p className={`text-xl font-medium leading-relaxed ${project.color === 'bg-primary' ? 'text-white' : 'text-black'}`}>
-                    {project.description}
-                  </p>
-                </div>
-                
-                <div className="mt-12">
-                  <button className="neo-btn bg-white text-black shadow-[4px_4px_0px_#000]">
-                    VIEW PROJECT ↗
-                  </button>
+                {/* Project Preview Image */}
+                <div className="w-full lg:w-1/2 h-64 lg:h-auto border-4 border-black overflow-hidden bg-gray-200 shadow-[6px_6px_0px_#000]">
+                  <img
+                    src={project.img}
+                    alt={project.title}
+                    className="w-full h-full object-cover filter contrast-125 grayscale-[20%]"
+                  />
                 </div>
 
-              </div>
-
-              <div className="w-full lg:w-1/2 h-[400px] lg:h-auto border-l-[3px] lg:border-l-0 lg:border-l-[3px] border-black" style={{ borderLeftColor: 'transparent' }}>
-                <img 
-                  src={project.image} 
-                  alt={project.title}
-                  className="w-full h-full object-cover filter contrast-125 grayscale-[20%]"
-                />
-              </div>
-            </article>
+              </article>
+            </div>
           ))}
         </div>
-
       </div>
     </section>
   );

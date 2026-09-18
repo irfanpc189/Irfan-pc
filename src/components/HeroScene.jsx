@@ -1,7 +1,31 @@
 import React, { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { Link } from 'react-router-dom';
 import heroImg from '../assets/hero-portrait.png';
+
+const InstagramIcon = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <rect width="20" height="20" x="2" y="2" rx="5" ry="5"/>
+    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+    <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>
+  </svg>
+);
+
+const LinkedinIcon = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+    <rect width="4" height="12" x="2" y="9"/>
+    <circle cx="4" cy="4" r="2"/>
+  </svg>
+);
+
+const GithubIcon = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/>
+    <path d="M9 18c-4.51 2-5-2-7-2"/>
+  </svg>
+);
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -81,7 +105,7 @@ export default function HeroScene() {
         }
         .brutal-shadow {
           box-shadow: 8px 8px 0 black;
-          transition: all 0.2s ease-out;
+          transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.1s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .brutal-shadow:hover {
           transform: translate(4px, 4px) rotate(var(--rot, 0deg)) !important;
@@ -136,12 +160,28 @@ export default function HeroScene() {
       >
         
 
+        {/* Social Links (Hero) */}
+        <div 
+          className="absolute z-50 flex gap-4 pointer-events-auto" 
+          style={{ top: 'calc(38% - 120px)', left: '6%' }}
+        >
+          <a href="https://www.instagram.com/irf4n_.___?stkn=ZGViZHJmMmJ4N29v&utm_source=qr" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="bg-white text-black p-2 md:p-3 border-[3px] border-black brutal-shadow hover:-translate-y-1 transition-transform cursor-pointer">
+            <InstagramIcon className="w-6 h-6 md:w-8 md:h-8" />
+          </a>
+          <a href="https://www.linkedin.com/in/irfan-p-c-6011813b1" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="bg-white text-black p-2 md:p-3 border-[3px] border-black brutal-shadow hover:-translate-y-1 transition-transform cursor-pointer">
+            <LinkedinIcon className="w-6 h-6 md:w-8 md:h-8" />
+          </a>
+          <a href="https://github.com/" target="_blank" rel="noopener noreferrer" aria-label="GitHub" className="bg-white text-black p-2 md:p-3 border-[3px] border-black brutal-shadow hover:-translate-y-1 transition-transform cursor-pointer">
+            <GithubIcon className="w-6 h-6 md:w-8 md:h-8" />
+          </a>
+        </div>
+
         {/* Role Typography */}
         <div 
-          className="absolute z-10"
+          className="absolute z-10 pointer-events-none"
           style={{ top: '38%', left: '6%' }}
         >
-          <div className="flex flex-col items-start">
+          <div className="flex flex-col items-start pointer-events-none">
             <h2 className="hero-role-heading">
               UI/UX<br/>DESIGNER
             </h2>
@@ -178,8 +218,9 @@ export default function HeroScene() {
         </div>
 
         {/* LET'S BUILD Block */}
-        <div 
-          className="absolute z-20"
+        <Link 
+          to="/contact"
+          className="absolute z-20 block text-black no-underline hover:text-black"
           style={{ bottom: '12%', right: '8%' }}
         >
           <div 
@@ -190,21 +231,22 @@ export default function HeroScene() {
               LET'S<br/>BUILD<br/>SOMETHING<br/>GREAT.
             </p>
           </div>
-        </div>
+        </Link>
 
         {/* Red Accent Block & Text */}
         <div 
           className="absolute z-20 flex flex-col md:flex-row items-end md:items-start gap-4"
           style={{ top: '100px', right: '48px' }}
         >
-          <div 
+          <Link 
+            to="/about"
             className="bg-accent-2 text-black font-black w-12 h-12 md:w-16 md:h-16 flex items-center justify-center border-4 border-black brutal-shadow flex-shrink-0 cursor-pointer"
             style={{ '--rot': '12deg', transform: 'rotate(12deg)' }}
           >
             <span className="text-2xl md:text-4xl">↗</span>
-          </div>
+          </Link>
           
-          <div className="hidden md:flex flex-col items-start mt-2">
+          <div className="hidden md:flex flex-col items-start mt-2 pointer-events-none select-none">
             <p className="text-white text-sm md:text-base font-bold uppercase leading-tight tracking-widest" style={{ fontFamily: 'var(--font-body)', transform: 'rotate(-4deg)' }}>
               GOOD<br/>DESIGN<br/>BUILDS<br/>BETTER<br/>EXPERIENCES.
             </p>

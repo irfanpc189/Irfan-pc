@@ -1,835 +1,467 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import heroImg from '../assets/hero-portrait.png';
+import React, { useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import heroImg from '../assets/irfan-portrait-new.png';
+
+gsap.registerPlugin(ScrollTrigger);
 
 export default function AboutPage() {
-  const navigate = useNavigate();
+  const portraitContainerRef = useRef(null);
+  const portraitFloatRef = useRef(null);
+  const portraitImgRef = useRef(null);
 
-  const handleGoToProjects = () => {
-    navigate('/');
-    setTimeout(() => {
-      const el = document.getElementById('projects');
-      if (el) {
-        if (window.lenis && !window.lenis.isDestroyed) {
-          window.lenis.scrollTo(el);
-        } else {
-          el.scrollIntoView({ behavior: 'smooth' });
-        }
+  // Ensure we scroll to top when mounting the new page
+  useEffect(() => {
+    // 1. Cinematic Entrance Reveal
+    gsap.fromTo(portraitContainerRef.current,
+      { y: 80, opacity: 0, scale: 0.95 },
+      { y: 0, opacity: 1, scale: 1, duration: 1.2, ease: "power3.out", delay: 0.3 }
+    );
+
+    // 2. Continuous Ambient Floating (Idle Loop)
+    gsap.to(portraitFloatRef.current, {
+      y: "-12px",
+      duration: 3.5,
+      repeat: -1,
+      yoyo: true,
+      ease: "sine.inOut"
+    });
+
+    // 3. Cursor Parallax Depth (Interactive Tilt)
+    const handleMouseMove = (e) => {
+      const { innerWidth, innerHeight } = window;
+      const xPos = (e.clientX / innerWidth - 0.5) * 2;
+      const yPos = (e.clientY / innerHeight - 0.5) * 2;
+
+      const targetX = -xPos * 25;
+      const targetY = -yPos * 15;
+
+      gsap.to(portraitImgRef.current, {
+        x: targetX,
+        y: targetY,
+        duration: 0.8,
+        ease: "power2.out"
+      });
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+
+    // 4. Scroll Parallax (On Scroll Away)
+    gsap.to(portraitContainerRef.current, {
+      yPercent: 20,
+      ease: "none",
+      scrollTrigger: {
+        trigger: "#hero",
+        start: "top top",
+        end: "bottom top",
+        scrub: true
       }
-    }, 150);
-  };
+    });
+
+    if (window.lenis) {
+      window.lenis.scrollTo(0, { immediate: true });
+    } else {
+      window.scrollTo(0, 0);
+    }
+
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+    };
+  }, []);
 
   return (
-    <div className="w-full min-h-screen bg-white text-black py-8 px-4 sm:px-6 md:px-12 font-body selection:bg-accent-1 selection:text-black">
-      
-      {/* Container */}
-      <div className="max-w-7xl mx-auto flex flex-col gap-24">
+    <div className="w-full min-h-screen bg-white text-black font-body selection:bg-accent-1 selection:text-black pb-12 relative overflow-x-hidden">
+      {/* Back Button */}
+      <Link 
+        to="/" 
+        aria-label="Back to Home"
+        className="fixed top-[24px] left-[24px] z-[999] bg-accent-2 text-black w-12 h-12 md:w-14 md:h-14 flex items-center justify-center border-4 border-black shadow-[4px_4px_0px_#000] hover:shadow-[2px_2px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] transition-all cursor-pointer group"
+      >
+        <span className="text-2xl md:text-3xl font-black group-hover:-translate-x-1 transition-transform">←</span>
+      </Link>
 
-        {/* ============================================================ */}
-        {/* SECTION: HERO / MANIFESTO HEADER                             */}
-        {/* ============================================================ */}
-        <section className="relative w-full pt-6 pb-12 border-b-4 border-black">
+      {/* ============================================================ */}
+      {/* SECTION 01: INTRO (REBUILT HERO)                             */}
+      {/* ============================================================ */}
+      <section id="hero" className="relative w-full min-h-[100vh] pt-[100px] md:pt-[120px] flex flex-col justify-between px-[24px] md:px-8 bg-primary border-b-4 border-black overflow-hidden pb-0" style={{ position: 'relative', minHeight: '100vh', overflow: 'hidden' }}>
+        
+        {/* Main Content Container */}
+        <div className="max-w-7xl mx-auto w-full relative z-30 flex flex-col flex-grow">
           
-          {/* Eyebrow Stickers */}
-          <div className="flex flex-wrap items-center gap-3 mb-8">
-            <span className="neo-tag bg-accent-1 text-black text-sm md:text-base font-black transform -rotate-2">
-              MANIFESTO // 01
-            </span>
-            <span className="neo-tag bg-black text-white text-sm md:text-base font-black">
-              IRFAN PC // THE DEEP DIVE
-            </span>
-            <span className="neo-tag bg-primary text-white text-sm md:text-base font-black transform rotate-2">
-              OPEN FOR WORK 2026
-            </span>
-          </div>
-
-          {/* Main Editorial Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            
-            {/* Left Headline */}
-            <div className="lg:col-span-7 flex flex-col">
-              <h1 
-                className="font-display font-black text-5xl sm:text-7xl md:text-8xl lg:text-8xl uppercase tracking-tighter leading-none mb-8"
-                style={{ textShadow: '4px 4px 0px var(--color-primary)' }}
-              >
-                I DESIGN LIKE A DEVELOPER<br/>
-                <span className="text-primary" style={{ textShadow: '4px 4px 0px var(--color-black)' }}>
-                  AND CODE
-                </span><br/>
-                LIKE A DESIGNER.
-              </h1>
-
-              {/* Sub-quote card */}
-              <div className="neo-card bg-accent-1 p-6 md:p-8 transform -rotate-1 max-w-2xl">
-                <p className="font-display font-black text-2xl sm:text-3xl uppercase leading-tight text-black">
-                  "Which means I argue with myself until the pixels behave."
-                </p>
-                <p className="font-semibold text-base sm:text-lg mt-3 text-black">
-                  Bridging the gap between Figma artboards and responsive React code so zero creative intent is lost in translation.
-                </p>
-              </div>
-
-              {/* Quick Tags Cluster */}
-              <div className="flex flex-wrap gap-3 mt-8">
-                <span className="neo-tag bg-white text-black font-mono">LOCATION: INDIA</span>
-                <span className="neo-tag bg-white text-black font-mono">FOCUS: UI/UX + FRONTEND</span>
-                <span className="neo-tag bg-accent-2 text-white font-mono">FIGMA ⇄ REACT</span>
-              </div>
+          {/* Top Level Stickers - Independent zones */}
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center w-full gap-8 mb-12">
+            <div className="neo-tag mt-8 bg-accent-1 text-black font-black uppercase border-4 border-black shadow-[4px_4px_0px_#000] transform -rotate-2 inline-block px-4 py-2 w-max">
+              ABOUT ME // THE SHORT STORY
             </div>
-
-            {/* Right Framed Portrait Card */}
-            <div className="lg:col-span-5 flex justify-center">
-              <div className="relative w-full max-w-md">
-                
-                {/* Decorative background block */}
-                <div className="absolute inset-0 bg-primary translate-x-4 translate-y-4 border-4 border-black"></div>
-                
-                {/* Main Card */}
-                <div className="relative bg-white border-4 border-black p-4 flex flex-col items-center">
-                  
-                  {/* Top Bar inside frame */}
-                  <div className="w-full flex justify-between items-center border-b-4 border-black pb-3 mb-4">
-                    <span className="font-mono font-black text-sm tracking-wider uppercase">IRFAN_PC_PORTRAIT.RAW</span>
-                    <div className="flex gap-2">
-                      <div className="w-3 h-3 bg-accent-2 border-2 border-black"></div>
-                      <div className="w-3 h-3 bg-accent-1 border-2 border-black"></div>
-                      <div className="w-3 h-3 bg-primary border-2 border-black"></div>
-                    </div>
-                  </div>
-
-                  {/* Cutout Image Container */}
-                  <div className="w-full h-[420px] bg-accent-1 border-4 border-black overflow-hidden relative flex items-end justify-center">
-                    <img 
-                      src={heroImg} 
-                      alt="Irfan PC Portrait" 
-                      className="w-full h-full object-cover object-top filter contrast-110"
-                    />
-                    
-                    {/* Badge Overlay */}
-                    <div className="absolute bottom-3 left-3 neo-tag bg-black text-white text-xs font-mono">
-                      IRFAN PC // HYBRID CRAFTSMAN
-                    </div>
-                  </div>
-
-                  {/* Bottom Caption inside card */}
-                  <div className="w-full pt-4 flex justify-between items-center text-xs font-mono font-bold">
-                    <span>STATUS: ACTIVE & AVAILABLE</span>
-                    <span>EDITION: 2026.01</span>
-                  </div>
-
-                </div>
-
-              </div>
+            <div className="neo-tag mt-8 bg-white text-black font-black uppercase border-4 border-black shadow-[4px_4px_0px_#000] transform rotate-3 inline-block px-4 py-2 w-max self-end md:self-auto">
+              CREATIVE THINKER & MAKER.
             </div>
-
           </div>
-
-        </section>
-
-
-        {/* ============================================================ */}
-        {/* SECTION 01: WHO I AM (THE HYBRID IDENTITY)                   */}
-        {/* ============================================================ */}
-        <section className="flex flex-col gap-10">
           
-          <div className="flex items-center gap-4">
-            <span className="neo-tag bg-black text-white text-lg font-black">
-              01 // IDENTITY
-            </span>
-            <h2 className="font-display font-black text-4xl sm:text-6xl uppercase tracking-tight">
-              WHO I AM
-            </h2>
-          </div>
-
-          {/* Intro Paragraph in brutalist block */}
-          <div className="neo-card bg-white p-8 sm:p-12 border-4 border-black shadow-neo-lg">
-            <h3 className="font-display font-black text-3xl sm:text-4xl uppercase mb-6 leading-tight">
-              A Product Designer & Frontend Developer who refuses to treat design and engineering as two separate worlds.
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-lg sm:text-xl font-semibold leading-relaxed">
-              <p>
-                In standard digital production, a massive chasm exists between the design phase and the engineering phase. Designers build gorgeous mockups in Figma that look breathtaking in static viewports, but often fail under real DOM stress, dynamic state mutations, or responsive constraints.
-              </p>
-              <p>
-                Meanwhile, developers tasked with implementing those mockups frequently lack the spatial intuition to notice mismatched kerning, incorrect transition curves, or awkward optical alignments. I eliminate this entire friction by owning both sides of the equation.
-              </p>
-            </div>
-          </div>
-
-          {/* 4-Pillar Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            
-            <div className="neo-card bg-accent-1 text-black p-6 flex flex-col justify-between transform -rotate-1 hover:rotate-0 transition-transform">
-              <div>
-                <span className="font-mono font-black text-4xl leading-none">50/50</span>
-                <h4 className="font-display font-black text-2xl uppercase mt-4 mb-2">DUAL DNA</h4>
-                <p className="font-semibold text-base leading-snug">
-                  Equal parts Figma system architect and React/CSS code engineer.
-                </p>
-              </div>
-              <div className="mt-6 pt-4 border-t-2 border-black font-mono text-xs font-bold">
-                FIGMA + REACT
-              </div>
-            </div>
-
-            <div className="neo-card bg-primary text-white p-6 flex flex-col justify-between transform rotate-1 hover:rotate-0 transition-transform">
-              <div>
-                <span className="font-mono font-black text-4xl leading-none">ZERO</span>
-                <h4 className="font-display font-black text-2xl uppercase mt-4 mb-2">HANDOFF DRAMA</h4>
-                <p className="font-semibold text-base leading-snug">
-                  No specs lost in translation. What is designed is exactly what ships to production.
-                </p>
-              </div>
-              <div className="mt-6 pt-4 border-t-2 border-black font-mono text-xs font-bold">
-                SEAMLESS EXECUTION
-              </div>
-            </div>
-
-            <div className="neo-card bg-accent-2 text-white p-6 flex flex-col justify-between transform -rotate-1 hover:rotate-0 transition-transform">
-              <div>
-                <span className="font-mono font-black text-4xl leading-none">100%</span>
-                <h4 className="font-display font-black text-2xl uppercase mt-4 mb-2">TACTILE CRAFT</h4>
-                <p className="font-semibold text-base leading-snug">
-                  Micro-interactions, button snap, typography rhythm, and intentional delight.
-                </p>
-              </div>
-              <div className="mt-6 pt-4 border-t-2 border-black font-mono text-xs font-bold">
-                FEELS PHYSICAL
-              </div>
-            </div>
-
-            <div className="neo-card bg-white text-black p-6 flex flex-col justify-between transform rotate-1 hover:rotate-0 transition-transform">
-              <div>
-                <span className="font-mono font-black text-4xl leading-none">SPEED</span>
-                <h4 className="font-display font-black text-2xl uppercase mt-4 mb-2">RAPID SPRINTS</h4>
-                <p className="font-semibold text-base leading-snug">
-                  Faster iterations, fewer sync meetings, and production-ready code from sprint one.
-                </p>
-              </div>
-              <div className="mt-6 pt-4 border-t-2 border-black font-mono text-xs font-bold">
-                HIGH VELOCITY
-              </div>
-            </div>
-
-          </div>
-
-        </section>
-
-
-        {/* ============================================================ */}
-        {/* SECTION 02: MY DESIGN PHILOSOPHY                             */}
-        {/* ============================================================ */}
-        <section className="flex flex-col gap-10">
-          
-          <div className="flex items-center gap-4">
-            <span className="neo-tag bg-primary text-white text-lg font-black">
-              02 // PHILOSOPHY
-            </span>
-            <h2 className="font-display font-black text-4xl sm:text-6xl uppercase tracking-tight">
-              HOW I THINK & DESIGN
-            </h2>
-          </div>
-
-          {/* Banner Quote */}
-          <div className="neo-card bg-accent-1 text-black p-8 sm:p-14 border-4 border-black text-center transform -rotate-1">
-            <h3 
-              className="font-display font-black text-3xl sm:text-5xl md:text-6xl uppercase leading-tight max-w-5xl mx-auto"
-              style={{ textShadow: '3px 3px 0px #ffffff' }}
+          {/* Typography Wrapper (Left Column Isolation) */}
+          <div className="relative z-20 max-w-[45vw]">
+            {/* Headline - 4 lines for more aggressive scale */}
+            <h1 
+              className="font-display font-black text-6xl sm:text-7xl lg:text-[7rem] uppercase leading-[0.85] text-white tracking-tight mb-8"
+              style={{ textShadow: '8px 8px 0px var(--color-black)' }}
             >
-              "GOOD UX IS LIKE A GOOD JOKE — IF YOU HAVE TO EXPLAIN IT, IT'S TERRIBLE."
-            </h3>
-            <p className="font-mono text-base sm:text-lg font-black mt-6 tracking-widest uppercase">
-              // PRINCIPLE: CLARITY FIRST, NOVELTY SECOND, CRAFT ALWAYS
-            </p>
-          </div>
-
-          {/* 4 Detailed Principle Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              I DESIGN LIKE A<br />DEVELOPER.<br /><br />
+              AND CODE LIKE A<br />DESIGNER.
+            </h1>
             
-            <div className="neo-card bg-white p-8 border-4 border-black flex flex-col justify-between">
-              <div>
-                <div className="flex justify-between items-center mb-6">
-                  <span className="font-mono font-black text-2xl bg-black text-white px-3 py-1">PILLAR 01</span>
-                  <span className="font-mono font-bold text-sm">ERGONOMICS</span>
-                </div>
-                <h4 className="font-display font-black text-3xl uppercase mb-4">
-                  FUNCTION FIRST, PERSONALITY ALWAYS
-                </h4>
-                <p className="font-semibold text-lg leading-relaxed text-neutral-800">
-                  A sterile, cookie-cutter gray interface is forgettable. But an eccentric interface that confuses the user is unusable. I strike the delicate balance: rock-solid usability, instant affordance, and intuitive wayfinding infused with bold character and memorable flair.
-                </p>
-              </div>
-              <div className="mt-8 pt-4 border-t-2 border-black font-mono text-sm font-bold text-primary">
-                NO BLAND TEMPLATES
-              </div>
-            </div>
-
-            <div className="neo-card bg-white p-8 border-4 border-black flex flex-col justify-between">
-              <div>
-                <div className="flex justify-between items-center mb-6">
-                  <span className="font-mono font-black text-2xl bg-black text-white px-3 py-1">PILLAR 02</span>
-                  <span className="font-mono font-bold text-sm">ARCHITECTURE</span>
-                </div>
-                <h4 className="font-display font-black text-3xl uppercase mb-4">
-                  SYSTEMIC DESIGN THINKING
-                </h4>
-                <p className="font-semibold text-lg leading-relaxed text-neutral-800">
-                  I don't design isolated screens; I design cohesive ecosystems. Every button variant, elevation token, typography scale, and form state is part of a scalable design system that translates cleanly into reusable React components.
-                </p>
-              </div>
-              <div className="mt-8 pt-4 border-t-2 border-black font-mono text-sm font-bold text-primary">
-                ATOMIC & SCALABLE
-              </div>
-            </div>
-
-            <div className="neo-card bg-white p-8 border-4 border-black flex flex-col justify-between">
-              <div>
-                <div className="flex justify-between items-center mb-6">
-                  <span className="font-mono font-black text-2xl bg-black text-white px-3 py-1">PILLAR 03</span>
-                  <span className="font-mono font-bold text-sm">REALISM</span>
-                </div>
-                <h4 className="font-display font-black text-3xl uppercase mb-4">
-                  CODE-AWARE PROTOTYPING
-                </h4>
-                <p className="font-semibold text-lg leading-relaxed text-neutral-800">
-                  A prototype shouldn't just be an illusion. When I mock up a layout, I already consider network latencies, empty states, error boundaries, keyboard focus traversal, and dynamic text wrapping on mobile screens.
-                </p>
-              </div>
-              <div className="mt-8 pt-4 border-t-2 border-black font-mono text-sm font-bold text-primary">
-                BONDED WITH REALITY
-              </div>
-            </div>
-
-            <div className="neo-card bg-white p-8 border-4 border-black flex flex-col justify-between">
-              <div>
-                <div className="flex justify-between items-center mb-6">
-                  <span className="font-mono font-black text-2xl bg-black text-white px-3 py-1">PILLAR 04</span>
-                  <span className="font-mono font-bold text-sm">TACTILITY</span>
-                </div>
-                <h4 className="font-display font-black text-3xl uppercase mb-4">
-                  PHYSICAL INTERACTION DELIGHT
-                </h4>
-                <p className="font-semibold text-lg leading-relaxed text-neutral-800">
-                  Software feels best when it responds like a physical object. Hover lifts, button depress offsets, clean easing curves, and tactile feedback make the browser feel alive rather than like static ink on glass.
-                </p>
-              </div>
-              <div className="mt-8 pt-4 border-t-2 border-black font-mono text-sm font-bold text-primary">
-                INTENTIONAL MOTION
-              </div>
-            </div>
-
-          </div>
-
-        </section>
-
-
-        {/* ============================================================ */}
-        {/* SECTION 03: MY 6-STEP WORKFLOW                               */}
-        {/* ============================================================ */}
-        <section className="flex flex-col gap-10">
-          
-          <div className="flex items-center gap-4">
-            <span className="neo-tag bg-accent-2 text-white text-lg font-black">
-              03 // WORKFLOW
-            </span>
-            <h2 className="font-display font-black text-4xl sm:text-6xl uppercase tracking-tight">
-              FROM CHAOS TO SHIPPED REALITY
-            </h2>
-          </div>
-
-          <div className="neo-card bg-primary text-white p-6 sm:p-10 border-4 border-black">
-            <p className="font-display font-black text-2xl sm:text-3xl uppercase tracking-wide">
-              THE 6-STAGE ENGINE: HOW AN IDEA BECOMES HIGH-PERFORMANCE CODE
-            </p>
-          </div>
-
-          {/* Workflow Sequence */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            
-            <div className="neo-card bg-white p-8 border-4 border-black flex flex-col justify-between hover:-translate-y-2 transition-transform">
-              <div>
-                <span className="font-display font-black text-6xl text-primary leading-none block mb-4">01</span>
-                <h3 className="font-display font-black text-2xl uppercase mb-3">DISCOVER & DECONSTRUCT</h3>
-                <p className="font-semibold text-base leading-relaxed text-neutral-800">
-                  Dig deep into user problems, business goals, and technical constraints. Unpack the core job-to-be-done before drawing a single frame.
-                </p>
-              </div>
-              <div className="mt-6 pt-4 border-t-2 border-black font-mono text-xs font-bold text-black uppercase">
-                DELIVERABLE: PROBLEM AUDIT
-              </div>
-            </div>
-
-            <div className="neo-card bg-white p-8 border-4 border-black flex flex-col justify-between hover:-translate-y-2 transition-transform">
-              <div>
-                <span className="font-display font-black text-6xl text-primary leading-none block mb-4">02</span>
-                <h3 className="font-display font-black text-2xl uppercase mb-3">DEFINE & WIREFRAME</h3>
-                <p className="font-semibold text-base leading-relaxed text-neutral-800">
-                  Construct user journeys, navigation mental models, and structural wireframe blueprints. Test ergonomics and information hierarchy early.
-                </p>
-              </div>
-              <div className="mt-6 pt-4 border-t-2 border-black font-mono text-xs font-bold text-black uppercase">
-                DELIVERABLE: WIREFRAME BLUEPRINT
-              </div>
-            </div>
-
-            <div className="neo-card bg-white p-8 border-4 border-black flex flex-col justify-between hover:-translate-y-2 transition-transform">
-              <div>
-                <span className="font-display font-black text-6xl text-primary leading-none block mb-4">03</span>
-                <h3 className="font-display font-black text-2xl uppercase mb-3">DESIGN SYSTEM & HIGH-FI</h3>
-                <p className="font-semibold text-base leading-relaxed text-neutral-800">
-                  Build atomic color palettes, typography ramps, responsive auto-layouts, and component states directly within Figma.
-                </p>
-              </div>
-              <div className="mt-6 pt-4 border-t-2 border-black font-mono text-xs font-bold text-black uppercase">
-                DELIVERABLE: FIGMA DESIGN SYSTEM
-              </div>
-            </div>
-
-            <div className="neo-card bg-white p-8 border-4 border-black flex flex-col justify-between hover:-translate-y-2 transition-transform">
-              <div>
-                <span className="font-display font-black text-6xl text-accent-2 leading-none block mb-4">04</span>
-                <h3 className="font-display font-black text-2xl uppercase mb-3">PROTOTYPE & VALIDATE</h3>
-                <p className="font-semibold text-base leading-relaxed text-neutral-800">
-                  Pressure-test click-paths, interaction pacing, and responsive transitions. Validate whether the flow feels seamless or awkward.
-                </p>
-              </div>
-              <div className="mt-6 pt-4 border-t-2 border-black font-mono text-xs font-bold text-black uppercase">
-                DELIVERABLE: INTERACTIVE PROTOTYPE
-              </div>
-            </div>
-
-            <div className="neo-card bg-white p-8 border-4 border-black flex flex-col justify-between hover:-translate-y-2 transition-transform">
-              <div>
-                <span className="font-display font-black text-6xl text-accent-2 leading-none block mb-4">05</span>
-                <h3 className="font-display font-black text-2xl uppercase mb-3">FRONTEND ENGINEERING</h3>
-                <p className="font-semibold text-base leading-relaxed text-neutral-800">
-                  Write clean, modular, semantic React components. Hook up states, animations (GSAP/Lenis), and ensure zero layout shifting.
-                </p>
-              </div>
-              <div className="mt-6 pt-4 border-t-2 border-black font-mono text-xs font-bold text-black uppercase">
-                DELIVERABLE: MODULAR REACT CODE
-              </div>
-            </div>
-
-            <div className="neo-card bg-white p-8 border-4 border-black flex flex-col justify-between hover:-translate-y-2 transition-transform">
-              <div>
-                <span className="font-display font-black text-6xl text-accent-2 leading-none block mb-4">06</span>
-                <h3 className="font-display font-black text-2xl uppercase mb-3">POLISH, TEST & SHIP</h3>
-                <p className="font-semibold text-base leading-relaxed text-neutral-800">
-                  Cross-browser sanity testing, accessibility audits, mobile touch tuning, and automated build verification before pushing live.
-                </p>
-              </div>
-              <div className="mt-6 pt-4 border-t-2 border-black font-mono text-xs font-bold text-black uppercase">
-                DELIVERABLE: LIVE DEPLOYMENT
-              </div>
-            </div>
-
-          </div>
-
-        </section>
-
-
-        {/* ============================================================ */}
-        {/* SECTION 04: SKILLS & ARSENAL                                 */}
-        {/* ============================================================ */}
-        <section className="flex flex-col gap-10">
-          
-          <div className="flex items-center gap-4">
-            <span className="neo-tag bg-black text-white text-lg font-black">
-              04 // ARSENAL
-            </span>
-            <h2 className="font-display font-black text-4xl sm:text-6xl uppercase tracking-tight">
-              SKILLS & TOOLKIT
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            
-            {/* UI/UX Column */}
-            <div className="neo-card bg-white border-4 border-black p-8 flex flex-col justify-between">
-              <div>
-                <div className="bg-accent-1 text-black font-display font-black text-2xl p-4 border-2 border-black mb-6 uppercase flex justify-between items-center">
-                  <span>UI/UX DESIGN</span>
-                  <span>🎨</span>
-                </div>
-                
-                <div className="flex flex-wrap gap-3">
-                  {[
-                    'Figma Master',
-                    'Auto-Layout & Variants',
-                    'Design Systems',
-                    'Wireframing',
-                    'Interactive Prototyping',
-                    'Information Architecture',
-                    'Visual Hierarchy',
-                    'Typography Rhythms',
-                    'Mobile-First UX',
-                    'WCAG Accessibility',
-                    'User Testing',
-                    'Micro-Interactions'
-                  ].map((skill, idx) => (
-                    <span 
-                      key={idx}
-                      className="neo-tag bg-white text-black text-sm font-bold border-2 border-black hover:-translate-y-1 transition-transform"
-                    >
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              <div className="mt-8 pt-4 border-t-2 border-black font-mono text-xs font-bold">
-                CORE: FIGMA + SYSTEM SPECIFICATIONS
-              </div>
-            </div>
-
-            {/* Frontend Column */}
-            <div className="neo-card bg-white border-4 border-black p-8 flex flex-col justify-between">
-              <div>
-                <div className="bg-primary text-white font-display font-black text-2xl p-4 border-2 border-black mb-6 uppercase flex justify-between items-center">
-                  <span>FRONTEND DEV</span>
-                  <span>⚡</span>
-                </div>
-                
-                <div className="flex flex-wrap gap-3">
-                  {[
-                    'React.js',
-                    'JavaScript (ES6+)',
-                    'HTML5 Semantics',
-                    'Modern CSS3',
-                    'TailwindCSS',
-                    'GSAP & ScrollTrigger',
-                    'Lenis Smooth Scroll',
-                    'React Router',
-                    'Responsive Layouts',
-                    'DOM Performance',
-                    'Git & GitHub',
-                    'Vite & Tooling'
-                  ].map((skill, idx) => (
-                    <span 
-                      key={idx}
-                      className="neo-tag bg-primary text-white text-sm font-bold border-2 border-black hover:-translate-y-1 transition-transform"
-                    >
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              <div className="mt-8 pt-4 border-t-2 border-black font-mono text-xs font-bold">
-                CORE: REACT + CSS + GSAP
-              </div>
-            </div>
-
-            {/* Strategy & Tools Column */}
-            <div className="neo-card bg-white border-4 border-black p-8 flex flex-col justify-between">
-              <div>
-                <div className="bg-accent-2 text-white font-display font-black text-2xl p-4 border-2 border-black mb-6 uppercase flex justify-between items-center">
-                  <span>METHOD & TOOLS</span>
-                  <span>🛠️</span>
-                </div>
-                
-                <div className="flex flex-wrap gap-3">
-                  {[
-                    'Zero-Handoff Workflow',
-                    'Component Architecture',
-                    'Rapid Iteration',
-                    'Design QA',
-                    'DevTools Profiling',
-                    'VS Code Power User',
-                    'Agile Sprint Velocity',
-                    'Cross-Browser Tuning',
-                    'Design Token Pipelines',
-                    'Creative Problem Solving',
-                    'Continuous Experimentation'
-                  ].map((skill, idx) => (
-                    <span 
-                      key={idx}
-                      className="neo-tag bg-accent-2 text-white text-sm font-bold border-2 border-black hover:-translate-y-1 transition-transform"
-                    >
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              <div className="mt-8 pt-4 border-t-2 border-black font-mono text-xs font-bold">
-                CORE: SPEED + CRAFT + RIGOR
-              </div>
-            </div>
-
-          </div>
-
-        </section>
-
-
-        {/* ============================================================ */}
-        {/* SECTION 05: EXPERIENCE & STORIES                             */}
-        {/* ============================================================ */}
-        <section className="flex flex-col gap-10">
-          
-          <div className="flex items-center gap-4">
-            <span className="neo-tag bg-accent-1 text-black text-lg font-black">
-              05 // CASE STUDY LOG
-            </span>
-            <h2 className="font-display font-black text-4xl sm:text-6xl uppercase tracking-tight">
-              THE WORK & LESSONS
-            </h2>
-          </div>
-
-          <div className="flex flex-col gap-8">
-            
-            {/* Project 1 */}
-            <div className="neo-card bg-white border-4 border-black p-8 sm:p-10 flex flex-col lg:flex-row justify-between gap-8 hover:-translate-y-1 transition-transform">
-              <div className="lg:w-1/3 flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="neo-tag bg-primary text-white text-xs font-mono">2026</span>
-                    <span className="neo-tag bg-black text-white text-xs font-mono">CASE STUDY</span>
-                  </div>
-                  <h3 className="font-display font-black text-4xl uppercase">RE-STORE</h3>
-                  <p className="font-mono text-sm font-bold text-neutral-600 mt-1 uppercase">
-                    DIY REPAIR & CIRCULAR ECONOMY
-                  </p>
-                </div>
-                <div className="mt-6 pt-4 border-t-2 border-black font-mono text-xs font-bold text-primary">
-                  ROLE: UX ARCHITECTURE + REACT BUILD
-                </div>
-              </div>
-
-              <div className="lg:w-2/3 flex flex-col justify-between">
-                <p className="font-semibold text-lg leading-relaxed text-neutral-800">
-                  Built a community-powered repair platform designed to reduce electronic waste. Tackled the UX challenge of breaking down high-density technical fix manuals into step-by-step interactive card sequences with progress checkpoints. Engineered responsive React components and intuitive search filters.
-                </p>
-                <div className="flex flex-wrap gap-2 mt-6">
-                  <span className="neo-tag bg-accent-1 text-black text-xs font-mono">STEP-BY-STEP UX</span>
-                  <span className="neo-tag bg-white text-black text-xs font-mono">COMMUNITY GUIDES</span>
-                  <span className="neo-tag bg-white text-black text-xs font-mono">REACT + TAILWIND</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Project 2 */}
-            <div className="neo-card bg-white border-4 border-black p-8 sm:p-10 flex flex-col lg:flex-row justify-between gap-8 hover:-translate-y-1 transition-transform">
-              <div className="lg:w-1/3 flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="neo-tag bg-accent-1 text-black text-xs font-mono">2025</span>
-                    <span className="neo-tag bg-black text-white text-xs font-mono">CASE STUDY</span>
-                  </div>
-                  <h3 className="font-display font-black text-4xl uppercase">HOUZING</h3>
-                  <p className="font-mono text-sm font-bold text-neutral-600 mt-1 uppercase">
-                    MODERN REAL ESTATE PORTAL
-                  </p>
-                </div>
-                <div className="mt-6 pt-4 border-t-2 border-black font-mono text-xs font-bold text-primary">
-                  ROLE: END-TO-END UI/UX & FRONTEND
-                </div>
-              </div>
-
-              <div className="lg:w-2/3 flex flex-col justify-between">
-                <p className="font-semibold text-lg leading-relaxed text-neutral-800">
-                  Redesigned the property discovery journey to replace cluttered MLS listings with clean spatial visual hierarchy. Created interactive 360-degree tour cards, sticky agent inquiry modules, and smart neighborhood data visualizations that reduced discovery friction by 40%.
-                </p>
-                <div className="flex flex-wrap gap-2 mt-6">
-                  <span className="neo-tag bg-primary text-white text-xs font-mono">SPATIAL CARDS</span>
-                  <span className="neo-tag bg-white text-black text-xs font-mono">VIRTUAL TOURS</span>
-                  <span className="neo-tag bg-white text-black text-xs font-mono">CONVERSION UX</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Project 3 */}
-            <div className="neo-card bg-white border-4 border-black p-8 sm:p-10 flex flex-col lg:flex-row justify-between gap-8 hover:-translate-y-1 transition-transform">
-              <div className="lg:w-1/3 flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="neo-tag bg-accent-2 text-white text-xs font-mono">2025</span>
-                    <span className="neo-tag bg-black text-white text-xs font-mono">CASE STUDY</span>
-                  </div>
-                  <h3 className="font-display font-black text-4xl uppercase">REXECOMMERCE</h3>
-                  <p className="font-mono text-sm font-bold text-neutral-600 mt-1 uppercase">
-                    STREETWEAR & SNEAKER STOREFRONT
-                  </p>
-                </div>
-                <div className="mt-6 pt-4 border-t-2 border-black font-mono text-xs font-bold text-primary">
-                  ROLE: CREATIVE DIRECTION & FRONTEND
-                </div>
-              </div>
-
-              <div className="lg:w-2/3 flex flex-col justify-between">
-                <p className="font-semibold text-lg leading-relaxed text-neutral-800">
-                  Engineered an editorial e-commerce platform blending high-fashion brutalism with smooth cart ergonomics. Built interactive product rotators, micro-animated hover states, and a streamlined single-step checkout that keeps users immersed in the brand aesthetic.
-                </p>
-                <div className="flex flex-wrap gap-2 mt-6">
-                  <span className="neo-tag bg-accent-2 text-white text-xs font-mono">3D PRODUCT PREVIEWS</span>
-                  <span className="neo-tag bg-white text-black text-xs font-mono">BRUTALIST COMMERCE</span>
-                  <span className="neo-tag bg-white text-black text-xs font-mono">FAST CHECKOUT</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Project 4 */}
-            <div className="neo-card bg-white border-4 border-black p-8 sm:p-10 flex flex-col lg:flex-row justify-between gap-8 hover:-translate-y-1 transition-transform">
-              <div className="lg:w-1/3 flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="neo-tag bg-black text-white text-xs font-mono">2024</span>
-                    <span className="neo-tag bg-black text-white text-xs font-mono">CASE STUDY</span>
-                  </div>
-                  <h3 className="font-display font-black text-4xl uppercase">CAREHAVEN</h3>
-                  <p className="font-mono text-sm font-bold text-neutral-600 mt-1 uppercase">
-                    ACCESSIBLE SENIOR HEALTH PLATFORM
-                  </p>
-                </div>
-                <div className="mt-6 pt-4 border-t-2 border-black font-mono text-xs font-bold text-primary">
-                  ROLE: ACCESSIBILITY & UX DESIGN
-                </div>
-              </div>
-
-              <div className="lg:w-2/3 flex flex-col justify-between">
-                <p className="font-semibold text-lg leading-relaxed text-neutral-800">
-                  Focused on high-empathy, high-accessibility design for families seeking certified senior care. Built with WCAG AAA typography contrast standards, simplified navigation trees, and instant-click emergency contact hotlines to ensure zero frustration for older users.
-                </p>
-                <div className="flex flex-wrap gap-2 mt-6">
-                  <span className="neo-tag bg-white text-black text-xs font-mono">WCAG COMPLIANCE</span>
-                  <span className="neo-tag bg-white text-black text-xs font-mono">SENIOR UX</span>
-                  <span className="neo-tag bg-white text-black text-xs font-mono">HIGH CONTRAST</span>
-                </div>
-              </div>
-            </div>
-
-          </div>
-
-        </section>
-
-
-        {/* ============================================================ */}
-        {/* SECTION 06: DIRECTION & WHY ME                               */}
-        {/* ============================================================ */}
-        <section className="flex flex-col gap-10">
-          
-          <div className="flex items-center gap-4">
-            <span className="neo-tag bg-primary text-white text-lg font-black">
-              06 // DIRECTION
-            </span>
-            <h2 className="font-display font-black text-4xl sm:text-6xl uppercase tracking-tight">
-              WHAT I'M BECOMING & WHY ME
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            
-            {/* What I want to become */}
-            <div className="neo-card bg-primary text-white p-8 sm:p-12 border-4 border-black flex flex-col justify-between transform -rotate-1 hover:rotate-0 transition-transform">
-              <div>
-                <span className="font-mono font-black text-sm bg-black text-white px-3 py-1 uppercase">
-                  THE FUTURE VISION
-                </span>
-                <h3 className="font-display font-black text-3xl sm:text-4xl uppercase mt-6 mb-6">
-                  EVOLVING INTO A CREATIVE TECHNOLOGIST
-                </h3>
-                <p className="font-semibold text-lg leading-relaxed mb-6">
-                  I believe the web should not be a dull sea of cookie-cutter SaaS layouts. As AI makes generic UI effortless to generate, true distinction will come from taste, intentional craft, and tactile individuality.
-                </p>
-                <p className="font-semibold text-lg leading-relaxed">
-                  I am expanding deeper into WebGL, creative motion systems, and experimental interfaces to craft digital software that feels physical, resilient, and unmistakably memorable.
-                </p>
-              </div>
-              <div className="mt-8 pt-4 border-t-2 border-white font-mono text-sm font-bold">
-                // CREATIVE TECH + TASTE + CODE
-              </div>
-            </div>
-
-            {/* Why Work With Me */}
-            <div className="neo-card bg-accent-1 text-black p-8 sm:p-12 border-4 border-black flex flex-col justify-between transform rotate-1 hover:rotate-0 transition-transform">
-              <div>
-                <span className="font-mono font-black text-sm bg-black text-white px-3 py-1 uppercase">
-                  VALUE DELIVERED
-                </span>
-                <h3 className="font-display font-black text-3xl sm:text-4xl uppercase mt-6 mb-6">
-                  WHY WORK WITH ME?
-                </h3>
-                
-                <ul className="flex flex-col gap-4 font-semibold text-lg leading-snug">
-                  <li className="flex items-start gap-3">
-                    <span className="font-black text-xl">⚡</span>
-                    <span><strong>Two disciplines, one brain:</strong> Eliminate weeks of back-and-forth between design and engineering teams.</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <span className="font-black text-xl">🎯</span>
-                    <span><strong>Pixel perfection guaranteed:</strong> Because I code what I design, nothing gets butchered during development.</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <span className="font-black text-xl">🛠️</span>
-                    <span><strong>Production-ready code:</strong> Clean, component-based, responsive, and performance-minded frontend architecture.</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <span className="font-black text-xl">🔥</span>
-                    <span><strong>Radical ownership:</strong> I care about user delight and conversion results, not just marking tickets done.</span>
-                  </li>
-                </ul>
-              </div>
-              
-              <div className="mt-8 pt-4 border-t-2 border-black font-mono text-sm font-bold">
-                // HIGH IMPACT + FAST ITERATION
-              </div>
-            </div>
-
-          </div>
-
-        </section>
-
-
-        {/* ============================================================ */}
-        {/* SECTION 07: CALL TO ACTION FOOTER BANNER                     */}
-        {/* ============================================================ */}
-        <section className="w-full my-8">
-          
-          <div className="neo-card bg-black text-white p-8 sm:p-16 border-4 border-black shadow-neo-xl flex flex-col items-center text-center">
-            
-            <span className="neo-tag bg-accent-1 text-black font-black text-base uppercase mb-6 transform -rotate-2">
-              LET'S COLLABORATE
-            </span>
-
+            {/* Role Typography */}
             <h2 
-              className="font-display font-black text-4xl sm:text-6xl md:text-7xl uppercase max-w-4xl leading-tight mb-6"
-              style={{ textShadow: '4px 4px 0px var(--color-primary)' }}
+              className="font-display font-black text-3xl sm:text-4xl lg:text-5xl uppercase text-white tracking-wide" 
+              style={{ textShadow: '4px 4px 0px var(--color-black)' }}
             >
-              HAVE A VISION IN MIND?<br/>LET'S BUILD SOMETHING GREAT.
+              DESIGNER <span className="text-accent-2 font-black">+</span> FRONTEND DEV
             </h2>
 
-            <p className="font-semibold text-lg sm:text-2xl max-w-2xl text-neutral-300 mb-10 leading-relaxed">
-              Available for full-stack UI/UX design, custom frontend builds, and design system contracts. Let's create an interface users will never forget.
-            </p>
+            {/* Red Label (Shorter graphic bar) */}
+            <a 
+              href="#who-i-am"
+              onClick={(e) => {
+                e.preventDefault();
+                document.getElementById('who-i-am')?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="neo-tag bg-accent-2 text-black font-black uppercase border-4 border-black shadow-[4px_4px_0px_#000] hover:shadow-[2px_2px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] transition-all transform -rotate-1 mt-8 mb-[56px] inline-block px-6 py-3 w-max relative z-30 cursor-pointer group"
+            >
+              PROBLEM SOLVER. <span className="font-sans ml-2 inline-block group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform">↗</span>
+            </a>
+          </div>
 
-            <div className="flex flex-wrap justify-center gap-4">
-              <a 
-                href="mailto:irfanpc189@gmail.com"
-                className="neo-btn bg-accent-1 text-black text-lg font-black border-4 border-black"
-              >
-                GET IN TOUCH ↗
-              </a>
-              
-              <button 
-                onClick={handleGoToProjects}
-                className="neo-btn bg-white text-black text-lg font-black border-4 border-black"
-              >
-                EXPLORE PROJECTS ↗
-              </button>
-              
-              <a 
-                href="https://linkedin.com"
-                target="_blank"
-                rel="noreferrer"
-                className="neo-btn bg-primary text-white text-lg font-black border-4 border-black"
-              >
-                LINKEDIN ↗
-              </a>
+        </div>
+
+        {/* Unboxed Large Portrait Layer (Overlapping composition) */}
+        <div 
+          ref={portraitContainerRef}
+          style={{
+            position: 'absolute',
+            bottom: '0px',
+            right: '2%',
+            zIndex: 10,
+            pointerEvents: 'none'
+          }}
+        >
+          <div ref={portraitFloatRef}>
+            <img 
+              ref={portraitImgRef}
+              src={heroImg} 
+              alt="Irfan PC" 
+              style={{
+                maxHeight: '75vh',
+                maxWidth: '48vw',
+                width: 'auto',
+                height: 'auto',
+                objectFit: 'contain',
+                objectPosition: 'bottom right'
+              }} 
+            />
+          </div>
+        </div>
+
+        {/* Process Strip at Bottom */}
+        <div className="w-full relative z-30 border-t-4 border-black bg-primary mt-auto -mx-4 md:-mx-8 px-[24px] md:px-8">
+          <div className="max-w-7xl mx-auto py-6">
+            <div className="flex gap-0 w-auto overflow-x-auto pb-2 scrollbar-hide">
+              {['01 DESIGN', '02 CODE', '03 BUILD'].map((step) => (
+                <div key={step} className="bg-white border-4 border-black px-6 py-2 font-display font-black text-xl uppercase shadow-[4px_4px_0px_#000] hover:-translate-y-1 transition-transform cursor-default inline-block w-max flex-shrink-0 mr-4 md:mr-8 last:mr-2 mb-2">
+                  {step}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      {/* ============================================================ */}
+      {/* SECTION 02: WHO I AM                                         */}
+      {/* ============================================================ */}
+      <section id="who-i-am" className="w-full min-h-screen bg-[#FFDE59] p-8 lg:p-16 grid grid-cols-1 lg:grid-cols-2 gap-10 items-center overflow-hidden border-b-4 border-black">
+        {/* Left Side */}
+        <div className="flex flex-col gap-6 max-w-xl mx-auto lg:mx-0">
+          <h2 className="text-6xl lg:text-8xl font-black font-display tracking-tight uppercase" style={{ textShadow: '4px 4px 0px var(--color-black)' }}>WHO I AM</h2>
+          <div className="bg-black text-white p-6 border-2 border-black shadow-[6px_6px_0px_#000] -rotate-1">
+            <p className="text-lg lg:text-xl font-bold leading-snug">
+              "I'm Irfan — a UI/UX designer and frontend developer focused on creating digital experiences that look good, feel intuitive, and actually work."
+            </p>
+          </div>
+        </div>
+
+        {/* Right Side */}
+        <div className="flex flex-col gap-6 w-full max-w-xl mx-auto lg:mx-0">
+          <div className="bg-white border-2 border-black p-8 shadow-[8px_8px_0px_#000] flex flex-col gap-4">
+            <h3 className="text-2xl font-black font-display uppercase border-b-2 border-black pb-3">
+              UI/UX DESIGNER + FRONTEND DEVELOPER
+            </h3>
+            <p className="text-lg font-bold leading-relaxed">
+              I exist in the weird, chaotic middle ground between pixels and logic. I love obsessing over typography, grid systems, and visual rhythm just as much as I enjoy writing clean, maintainable React components.
+            </p>
+          </div>
+
+          {/* Accent Card to kill blank space */}
+          <div className="bg-[#FF6B6B] border-2 border-black p-4 shadow-[4px_4px_0px_#000] flex justify-between items-center font-bold uppercase">
+            <span>✦ PIXEL PERFECT CODE</span>
+            <span>✦ INTUITIVE UX</span>
+          </div>
+        </div>
+      </section>
+
+      {/* ============================================================ */}
+      {/* SECTION 03: HOW I THINK                                      */}
+      {/* ============================================================ */}
+      <section className="py-24 px-4 md:px-8 bg-white border-b-4 border-black">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="font-display font-black text-6xl sm:text-8xl uppercase mb-16 text-center" style={{ textShadow: '4px 4px 0px var(--color-accent-2)' }}>
+            HOW I THINK
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="neo-card bg-primary text-white p-8 transform -rotate-1 flex flex-col">
+              <span className="text-7xl font-black font-display opacity-50 mb-2">01</span>
+              <h3 className="text-2xl font-black uppercase mb-4 border-b-4 border-black pb-4">Solve The Actual Problem</h3>
+              <p className="font-bold text-lg">Good design isn't just decoration. It's about deeply understanding the user's needs and removing friction. If it doesn't solve a problem, it's just art.</p>
+            </div>
+            <div className="neo-card bg-accent-1 p-8 transform rotate-1 flex flex-col mt-0 md:mt-12">
+              <span className="text-7xl font-black font-display opacity-50 mb-2">02</span>
+              <h3 className="text-2xl font-black uppercase mb-4 border-b-4 border-black pb-4">Clear Visual Hierarchy</h3>
+              <p className="font-bold text-lg">Users shouldn't have to think about where to look. I use typography, scale, and negative space to guide the eye and make complex interfaces feel simple.</p>
+            </div>
+            <div className="neo-card bg-black text-white p-8 transform -rotate-2 flex flex-col mt-0 md:mt-24">
+              <span className="text-7xl font-black font-display opacity-50 text-accent-1 mb-2">03</span>
+              <h3 className="text-2xl font-black uppercase mb-4 border-b-4 border-white pb-4">Implementation Matters</h3>
+              <p className="font-bold text-lg">A brilliant Figma file is useless if it can't be built. I design with responsive constraints, realistic data, and modern CSS/JS capabilities in mind.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ============================================================ */}
+      {/* SECTION 04: MY WORKFLOW                                      */}
+      {/* ============================================================ */}
+      <section className="py-24 px-4 md:px-8 bg-primary text-white border-b-4 border-black">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex justify-between items-end mb-16 border-b-4 border-white pb-8">
+            <h2 className="font-display font-black text-6xl sm:text-8xl uppercase" style={{ textShadow: '4px 4px 0px var(--color-black)' }}>
+              PROCESS
+            </h2>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              { num: '01', title: 'DISCOVER', desc: 'Understand the problem.' },
+              { num: '02', title: 'DEFINE', desc: 'Turn the problem into a clear direction.' },
+              { num: '03', title: 'WIREFRAME', desc: 'Structure the experience.' },
+              { num: '04', title: 'DESIGN', desc: 'Build the visual language.' },
+              { num: '05', title: 'PROTOTYPE', desc: 'Test the interaction.' },
+              { num: '06', title: 'BUILD', desc: 'Turn the design into working frontend.' },
+              { num: '07', title: 'REFINE', desc: 'Polish the details.' }
+            ].map((step, i) => (
+              <div key={i} className="border-4 border-black bg-white text-black p-6 brutal-shadow flex flex-col justify-center min-h-[180px] hover:-translate-y-1 transition-transform">
+                <span className="text-accent-2 font-black font-display text-2xl mb-1">{step.num}</span>
+                <h3 className="font-black text-2xl uppercase font-display border-b-4 border-black pb-2 mb-4">{step.title}</h3>
+                <p className="font-bold text-lg">{step.desc}</p>
+              </div>
+            ))}
+            
+            {/* Empty block for grid balance */}
+            <div className="border-4 border-black bg-accent-1 text-black p-6 flex flex-col justify-center items-center min-h-[180px] opacity-80 border-dashed">
+              <span className="font-display font-black text-3xl rotate-12">REPEAT ↻</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ============================================================ */}
+      {/* SECTION 05: THE TOOLBOX                                      */}
+      {/* ============================================================ */}
+      <section className="py-24 px-4 md:px-8 bg-white border-b-4 border-black">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16">
+          <div className="flex flex-col gap-8">
+            <h2 className="font-display font-black text-6xl sm:text-8xl uppercase" style={{ textShadow: '4px 4px 0px var(--color-accent-1)' }}>
+              THE TOOLBOX
+            </h2>
+            <div className="neo-card bg-black text-white p-6 inline-block self-start transform -rotate-2">
+              <p className="text-xl font-bold max-w-sm">
+                My stack spans both visual design and frontend architecture. I use the right tool for the job.
+              </p>
+            </div>
+          </div>
+          
+          <div className="flex flex-col gap-12">
+            <div className="neo-card bg-accent-1 p-8 sm:p-10">
+              <h3 className="font-black font-display text-4xl uppercase mb-8 border-b-4 border-black pb-4">DESIGN</h3>
+              <div className="flex flex-wrap gap-4">
+                {['Figma', 'UI/UX Design', 'Wireframing', 'Prototyping', 'User Flows', 'Design Systems', 'Responsive Design', 'Typography', 'Visual Design'].map(skill => (
+                  <div key={skill} className="border-4 border-black bg-white px-5 py-3 font-black text-lg uppercase shadow-[4px_4px_0px_#000] hover:-translate-y-1 transition-transform cursor-default">
+                    {skill}
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            <div className="neo-card bg-black text-white p-8 sm:p-10">
+              <h3 className="font-black font-display text-4xl uppercase mb-8 border-b-4 border-white pb-4 text-accent-1">DEVELOPMENT</h3>
+              <div className="flex flex-wrap gap-4">
+                {['HTML', 'CSS', 'JavaScript', 'React', 'Bootstrap', 'Git', 'GitHub', 'REST APIs', 'Responsive Development'].map(skill => (
+                  <div key={skill} className="border-4 border-white bg-primary px-5 py-3 font-black text-lg uppercase shadow-[4px_4px_0px_var(--color-accent-1)] text-white hover:-translate-y-1 transition-transform cursor-default">
+                    {skill}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ============================================================ */}
+      {/* SECTION 06: WHAT I DO                                        */}
+      {/* ============================================================ */}
+      <section className="py-24 px-4 md:px-8 bg-accent-2 border-b-4 border-black">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="font-display font-black text-6xl sm:text-8xl uppercase text-white mb-16 text-center" style={{ textShadow: '4px 4px 0px var(--color-black)' }}>
+            WHAT I DO
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+            <div className="neo-card bg-white p-10 flex flex-col gap-4 transform -rotate-1 hover:rotate-0 transition-transform">
+              <span className="text-6xl font-black font-display text-accent-2">01</span>
+              <h3 className="text-3xl font-black uppercase font-display border-b-4 border-black pb-4 mt-2">UI/UX DESIGN</h3>
+              <p className="text-lg font-bold mt-2 leading-relaxed">Crafting intuitive, accessible, and beautiful user interfaces that solve real user problems through systematic design thinking.</p>
+            </div>
+            <div className="neo-card bg-white p-10 flex flex-col gap-4 transform rotate-1 hover:rotate-0 transition-transform">
+              <span className="text-6xl font-black font-display text-accent-2">02</span>
+              <h3 className="text-3xl font-black uppercase font-display border-b-4 border-black pb-4 mt-2">WEB DESIGN</h3>
+              <p className="text-lg font-bold mt-2 leading-relaxed">Designing engaging marketing sites, landing pages, and web experiences that communicate brand value and drive conversion.</p>
+            </div>
+            <div className="neo-card bg-white p-10 flex flex-col gap-4 transform rotate-1 hover:rotate-0 transition-transform">
+              <span className="text-6xl font-black font-display text-accent-2">03</span>
+              <h3 className="text-3xl font-black uppercase font-display border-b-4 border-black pb-4 mt-2">FRONTEND DEVELOPMENT</h3>
+              <p className="text-lg font-bold mt-2 leading-relaxed">Translating designs into pixel-perfect, responsive, and performant code using React, modern CSS, and scalable architectures.</p>
+            </div>
+            <div className="neo-card bg-white p-10 flex flex-col gap-4 transform -rotate-1 hover:rotate-0 transition-transform">
+              <span className="text-6xl font-black font-display text-accent-2">04</span>
+              <h3 className="text-3xl font-black uppercase font-display border-b-4 border-black pb-4 mt-2">POSTER / VISUAL DESIGN</h3>
+              <p className="text-lg font-bold mt-2 leading-relaxed">Pushing creative boundaries with bold typography, stark contrasts, and neo-brutalist experimental graphic design.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+
+      {/* ============================================================ */}
+      {/* SECTION 08: THE JOURNEY                                      */}
+      {/* ============================================================ */}
+      <section className="py-24 px-4 md:px-8 bg-black text-white border-b-4 border-black">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="font-display font-black text-6xl sm:text-8xl uppercase mb-20 text-accent-1 text-center" style={{ textShadow: '4px 4px 0px var(--color-white)' }}>
+            THE JOURNEY
+          </h2>
+          
+          <div className="flex flex-col border-l-8 border-white pl-8 sm:pl-16 gap-20 relative ml-4 sm:ml-8">
+            
+            <div className="relative">
+              <div className="absolute -left-[48px] sm:-left-[76px] top-0 w-10 h-10 bg-accent-2 border-4 border-white brutal-shadow transform -rotate-12"></div>
+              <span className="neo-tag bg-white text-black mb-6 inline-block font-black text-lg">THE BEGINNING</span>
+              <h3 className="text-3xl font-black uppercase mb-4 text-accent-1">Curiosity & Visuals</h3>
+              <p className="font-bold text-xl text-gray-300 leading-relaxed max-w-2xl">Started by messing around with graphic design, posters, and learning how visual communication works. Fell in love with typography and grid systems.</p>
+            </div>
+            
+            <div className="relative">
+              <div className="absolute -left-[48px] sm:-left-[76px] top-0 w-10 h-10 bg-primary border-4 border-white brutal-shadow transform rotate-12"></div>
+              <span className="neo-tag bg-white text-black mb-6 inline-block font-black text-lg">THE PIVOT</span>
+              <h3 className="text-3xl font-black uppercase mb-4 text-accent-1">Discovering UI/UX</h3>
+              <p className="font-bold text-xl text-gray-300 leading-relaxed max-w-2xl">Realized static graphics weren't enough. I wanted things to be interactive. Dove deep into Figma, user psychology, and interface design principles.</p>
+            </div>
+            
+            <div className="relative">
+              <div className="absolute -left-[48px] sm:-left-[76px] top-0 w-10 h-10 bg-accent-1 border-4 border-white brutal-shadow transform rotate-45"></div>
+              <span className="neo-tag bg-white text-black mb-6 inline-block font-black text-lg">THE EVOLUTION</span>
+              <h3 className="text-3xl font-black uppercase mb-4 text-accent-1">Learning To Code</h3>
+              <p className="font-bold text-xl text-gray-300 leading-relaxed max-w-2xl">Got frustrated handing off designs and seeing them built wrong. Learned HTML, CSS, JavaScript, and React to build exactly what I designed.</p>
             </div>
 
           </div>
+        </div>
+      </section>
 
-        </section>
+      {/* ============================================================ */}
+      {/* SECTION 09: WHERE I'M GOING                                  */}
+      {/* ============================================================ */}
+      <section className="py-32 px-4 md:px-8 bg-primary flex justify-center items-center text-center border-b-4 border-black relative overflow-hidden">
+        
+        {/* Background decorative text */}
+        <div className="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none overflow-hidden">
+          <span className="font-display font-black text-[20vw] whitespace-nowrap leading-none">BUILD BUILD</span>
+        </div>
 
-      </div>
+        <div className="max-w-6xl relative z-10 flex flex-col items-center">
+
+          <div className="mt-16 bg-white text-black inline-block p-8 sm:p-12 border-4 border-black brutal-shadow transform rotate-2 max-w-4xl">
+            <p className="text-2xl sm:text-4xl font-black uppercase leading-tight">
+              My goal is to be a relentless product builder—a hybrid designer who architects the experience and engineers the interface.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ============================================================ */}
+      {/* SECTION 10: WHY ME?                                          */}
+      {/* ============================================================ */}
+      <section className="py-32 px-4 md:px-8 bg-white border-b-4 border-black overflow-hidden">
+        <div className="max-w-7xl mx-auto flex flex-col items-center">
+          <div className="neo-tag bg-black text-white mb-8 text-xl shadow-[6px_6px_0px_var(--color-primary)]">THE PITCH</div>
+          <h2 className="font-display font-black text-7xl sm:text-9xl uppercase mb-24 text-center" style={{ textShadow: '6px 6px 0px var(--color-accent-1)' }}>
+            WHY ME?
+          </h2>
+          
+          <div className="flex flex-col gap-8 w-full max-w-5xl">
+            {[
+              { text: 'I CARE ABOUT THE DETAILS.', color: 'bg-accent-1 text-black', rot: '-2deg', align: 'self-start' },
+              { text: 'I LIKE SOLVING PROBLEMS.', color: 'bg-primary text-white', rot: '1deg', align: 'self-end' },
+              { text: 'I DESIGN WITH CODE IN MIND.', color: 'bg-accent-2 text-black', rot: '-1deg', align: 'self-center' },
+              { text: 'I LIKE EXPERIMENTING.', color: 'bg-black text-white', rot: '2deg', align: 'self-start' },
+              { text: "I DON'T STOP AT THE FIRST VERSION.", color: 'bg-white text-black', rot: '-2deg', align: 'self-end' },
+            ].map((item, i) => (
+              <div 
+                key={i} 
+                className={`neo-card ${item.color} p-6 sm:p-8 w-full md:w-[85%] ${item.align} hover:scale-[1.02] transition-transform`}
+                style={{ transform: `rotate(${item.rot})` }}
+              >
+                <h3 className="font-display font-black text-3xl sm:text-5xl uppercase text-center sm:text-left">{item.text}</h3>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ============================================================ */}
+      {/* SECTION 11: CTA                                              */}
+      {/* ============================================================ */}
+      <section className="py-16 md:py-24 px-4 md:px-8 bg-accent-1 flex flex-col items-center text-center w-full overflow-hidden relative">
+        <h2 className="font-display font-black text-4xl sm:text-5xl md:text-6xl lg:text-7xl uppercase mb-12 leading-[1.1] relative w-full break-words max-w-4xl mx-auto">
+          <span className="relative z-10 block">
+            LET'S <span className="text-transparent" style={{ WebkitTextStroke: '2px black' }}>BUILD</span><br/>
+            SOMETHING<br/>
+            <span className="inline-block bg-black text-white px-6 py-2 mt-4 transform -rotate-2 shadow-[6px_6px_0px_var(--color-primary)]">
+              GREAT.
+            </span>
+          </span>
+        </h2>
+        
+        <div className="relative z-20 mt-8">
+          <Link 
+            to="/contact" 
+            className="bg-black text-white font-display font-black text-xl sm:text-3xl uppercase px-8 py-5 md:px-10 md:py-6 border-4 border-black inline-flex items-center gap-4 transition-all hover:-translate-y-2 hover:bg-primary group"
+            style={{ boxShadow: '8px 8px 0px var(--color-accent-2)' }}
+          >
+            LET'S WORK TOGETHER <span className="group-hover:translate-x-2 group-hover:-translate-y-2 transition-transform duration-300">↗</span>
+          </Link>
+        </div>
+      </section>
 
     </div>
   );
