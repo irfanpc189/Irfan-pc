@@ -27,44 +27,44 @@ export default function ProjectsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Projects</h2>
-        <Link to="/admin/projects/new" className="bg-black text-white px-4 py-2 rounded-md font-semibold flex items-center gap-2 hover:bg-gray-800">
-          <Plus size={18} /> Add Project
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b-4 border-black pb-8 gap-4">
+        <h2 className="text-4xl md:text-5xl font-display font-black uppercase tracking-tight">Projects</h2>
+        <Link to="/admin/projects/new" className="neo-btn">
+          <Plus size={20} /> Add Project
         </Link>
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-        <table className="w-full text-left">
-          <thead className="bg-gray-50 border-b border-gray-200">
+      <div className="bg-white border-black shadow-neo-lg overflow-x-auto">
+        <table className="w-full text-left border-collapse min-w-[600px]">
+          <thead className="bg-accent-2 border-b-4 border-black">
             <tr>
-              <th className="px-6 py-3 font-semibold text-gray-600">Title</th>
-              <th className="px-6 py-3 font-semibold text-gray-600">Status</th>
-              <th className="px-6 py-3 font-semibold text-gray-600">Order</th>
-              <th className="px-6 py-3 font-semibold text-gray-600 text-right">Actions</th>
+              <th className="px-6 py-4 font-black uppercase tracking-wider border-r-4 border-black">Title</th>
+              <th className="px-6 py-4 font-black uppercase tracking-wider border-r-4 border-black">Status</th>
+              <th className="px-6 py-4 font-black uppercase tracking-wider border-r-4 border-black">Order</th>
+              <th className="px-6 py-4 font-black uppercase tracking-wider text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200">
+          <tbody className="divide-y-4 divide-black">
             {loading ? (
-              <tr><td colSpan="4" className="px-6 py-4 text-center">Loading...</td></tr>
+              <tr><td colSpan="4" className="px-6 py-8 text-center font-bold uppercase">Loading...</td></tr>
             ) : projects.length === 0 ? (
-              <tr><td colSpan="4" className="px-6 py-4 text-center">No projects found.</td></tr>
+              <tr><td colSpan="4" className="px-6 py-8 text-center font-bold uppercase">No projects found.</td></tr>
             ) : (
               projects.map(project => (
-                <tr key={project.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 font-medium">{project.title}</td>
-                  <td className="px-6 py-4">
-                    <span className={`px-2 py-1 text-xs font-semibold rounded-full ${project.published ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}>
+                <tr key={project.id} className="transition-transform hover:-translate-y-1 relative z-10 hover:z-20 bg-white shadow-sm">
+                  <td className="px-6 py-4 font-bold border-r-4 border-black text-lg">{project.title}</td>
+                  <td className="px-6 py-4 border-r-4 border-black">
+                    <span className={`px-3 py-1 text-sm font-black uppercase border-black ${project.published ? 'bg-primary text-white shadow-neo-sm' : 'bg-white text-black shadow-neo-sm'}`}>
                       {project.published ? 'Published' : 'Draft'}
                     </span>
                   </td>
-                  <td className="px-6 py-4">{project.sort_order}</td>
-                  <td className="px-6 py-4 text-right space-x-2">
-                    <Link to={`/admin/projects/${project.id}`} className="text-blue-600 hover:text-blue-800 p-1 inline-flex" title="Edit">
-                      <Edit2 size={18} />
+                  <td className="px-6 py-4 font-bold border-r-4 border-black text-xl text-center">{project.sort_order}</td>
+                  <td className="px-6 py-4 text-right space-x-4">
+                    <Link to={`/admin/projects/${project.id}`} className="bg-black text-white p-2 inline-flex border-black shadow-neo-sm transition-transform hover:-translate-y-1" title="Edit">
+                      <Edit2 size={20} />
                     </Link>
-                    <button onClick={() => handleDelete(project.id)} className="text-red-600 hover:text-red-800 p-1 inline-flex" title="Delete">
-                      <Trash2 size={18} />
+                    <button onClick={() => handleDelete(project.id)} className="bg-accent-2 text-white p-2 inline-flex border-black shadow-neo-sm transition-transform hover:-translate-y-1" title="Delete">
+                      <Trash2 size={20} />
                     </button>
                   </td>
                 </tr>

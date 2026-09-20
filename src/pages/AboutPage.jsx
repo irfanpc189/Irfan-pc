@@ -1,4 +1,5 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { supabase } from '../lib/supabase';
 import { Link } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -10,6 +11,23 @@ export default function AboutPage() {
   const portraitContainerRef = useRef(null);
   const portraitFloatRef = useRef(null);
   const portraitImgRef = useRef(null);
+  
+  const [bio, setBio] = useState("I'm Irfan — a UI/UX designer and frontend developer focused on creating digital experiences that look good, feel intuitive, and actually work.");
+
+  useEffect(() => {
+    async function fetchBio() {
+      try {
+        const { data, error } = await supabase.from('site_content').select('*').eq('key', 'about_bio').single();
+        if (error) throw error;
+        if (data && data.value && data.value.text) {
+          setBio(data.value.text);
+        }
+      } catch (err) {
+        console.error("Error fetching bio, using fallback:", err.message);
+      }
+    }
+    fetchBio();
+  }, []);
 
   // Ensure we scroll to top when mounting the new page
   useEffect(() => {
@@ -185,7 +203,7 @@ export default function AboutPage() {
           <h2 className="text-6xl lg:text-8xl font-black font-display tracking-tight uppercase" style={{ textShadow: '4px 4px 0px var(--color-black)' }}>WHO I AM</h2>
           <div className="bg-black text-white p-6 border-2 border-black shadow-[6px_6px_0px_#000] -rotate-1">
             <p className="text-lg lg:text-xl font-bold leading-snug">
-              "I'm Irfan — a UI/UX designer and frontend developer focused on creating digital experiences that look good, feel intuitive, and actually work."
+              "{bio}"
             </p>
           </div>
         </div>

@@ -2,17 +2,28 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 
 export default function SkillsSection() {
-  const [fetchedSkills, setFetchedSkills] = useState([]);
+  const [dbSkills, setDbSkills] = useState([]);
 
   useEffect(() => {
     async function fetchSkills() {
-      const { data } = await supabase.from('site_content').select('*').eq('key', 'skills_list').single();
-      if (data && data.value && data.value.text) {
-        const skillsArray = data.value.text
-          .split(',')
-          .map(s => s.trim())
-          .filter(Boolean);
-        setFetchedSkills(skillsArray);
+      try {
+        // Fetch from new skills table
+        const { data, error } = await supabase.from('skills').select('*');
+        if (error) throw error;
+        
+        if (data && data.length > 0) {
+          setDbSkills(data);
+        } else {
+          // Fallback to old site_content if skills table is empty or fails
+          const { data: legacyData, error: legacyError } = await supabase.from('site_content').select('*').eq('key', 'skills_list').single();
+          if (!legacyError && legacyData?.value?.text) {
+            const legacyArray = legacyData.value.text.split(',').map(s => s.trim()).filter(Boolean);
+            // Map legacy strings to a default object format so the UI still renders them
+            setDbSkills(legacyArray.map((name, i) => ({ id: `legacy-${i}`, name, category: 'development' })));
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching skills, using fallback:", err.message);
       }
     }
     fetchSkills();
@@ -20,7 +31,7 @@ export default function SkillsSection() {
 
   const defaultSkills = [
     { 
-      category: 'DESIGN', 
+      category: 'DESIGN SKILLS', 
       color: 'bg-accent-1',
       items: [
         'Figma', 'UI Design', 'UX Design', 'Wireframing', 
@@ -29,7 +40,7 @@ export default function SkillsSection() {
       ] 
     },
     { 
-      category: 'DEVELOPMENT', 
+      category: 'DEVELOPMENT SKILLS', 
       color: 'bg-primary',
       textColor: 'text-white',
       items: [
@@ -39,9 +50,30 @@ export default function SkillsSection() {
     }
   ];
 
-  const displayGroups = fetchedSkills.length > 0 
-    ? [{ category: 'ALL SKILLS', color: 'bg-primary', textColor: 'text-white', items: fetchedSkills }]
-    : defaultSkills;
+  // Group fetched skills
+  let displayGroups = defaultSkills;
+  
+  if (dbSkills.length > 0) {
+    const designItems = dbSkills.filter(s => s.category === 'design').map(s => s.name);
+    const devItems = dbSkills.filter(s => s.category === 'development').map(s => s.name);
+    
+    // Only use the fetched data if it actually contains items to avoid rendering empty boxes
+    if (designItems.length > 0 || devItems.length > 0) {
+      displayGroups = [
+        {
+          category: 'DESIGN SKILLS',
+          color: 'bg-accent-1',
+          items: designItems
+        },
+        {
+          category: 'DEVELOPMENT SKILLS',
+          color: 'bg-primary',
+          textColor: 'text-white',
+          items: devItems
+        }
+      ];
+    }
+  }
 
   return (
     <section id="skills" className="w-full py-24 px-4 md:px-8 bg-white text-black border-t-[3px] border-black">

@@ -6,9 +6,14 @@ export default function AboutSection() {
 
   useEffect(() => {
     async function fetchBio() {
-      const { data } = await supabase.from('site_content').select('*').eq('key', 'about_bio').single();
-      if (data && data.value && data.value.text) {
-        setBio(data.value.text);
+      try {
+        const { data, error } = await supabase.from('site_content').select('*').eq('key', 'about_bio').single();
+        if (error) throw error;
+        if (data && data.value && data.value.text) {
+          setBio(data.value.text);
+        }
+      } catch (err) {
+        console.error("Error fetching bio, using fallback:", err.message);
       }
     }
     fetchBio();

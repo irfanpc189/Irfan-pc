@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useForm } from 'react-hook-form';
 import MDEditor from '@uiw/react-md-editor';
+import ImageUpload from '../../components/admin/ImageUpload';
 
 export default function BlogPostForm() {
   const { id } = useParams();
@@ -53,34 +54,38 @@ export default function BlogPostForm() {
 
   return (
     <div className="max-w-4xl">
-      <h2 className="text-2xl font-bold mb-6">{isEditing ? 'Edit Post' : 'New Post'}</h2>
+      <h2 className="text-4xl md:text-5xl font-display font-black uppercase tracking-tight mb-8 border-b-4 border-black pb-4 inline-block">{isEditing ? 'Edit Post' : 'New Post'}</h2>
       
-      <form onSubmit={handleSubmit(onSubmit)} className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="bg-white p-8 border-black shadow-neo-lg space-y-6">
         <div>
-          <label className="block text-sm font-semibold mb-1">Title</label>
-          <input {...register('title', { required: true })} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black" />
-          {errors.title && <span className="text-red-500 text-sm">Required</span>}
+          <label className="block text-sm font-black uppercase tracking-wider mb-2">Title</label>
+          <input {...register('title', { required: true })} className="w-full px-4 py-3 bg-gray-50 border-black font-bold focus:outline-none focus:bg-white focus:-translate-y-1 focus:shadow-neo-sm transition-all" />
+          {errors.title && <span className="text-red-500 font-bold uppercase text-sm mt-1 block">Required</span>}
         </div>
 
         <div>
-          <label className="block text-sm font-semibold mb-1">Slug</label>
-          <input {...register('slug', { required: true })} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black" />
-          {errors.slug && <span className="text-red-500 text-sm">Required</span>}
+          <label className="block text-sm font-black uppercase tracking-wider mb-2">Slug</label>
+          <input {...register('slug', { required: true })} className="w-full px-4 py-3 bg-gray-50 border-black font-bold focus:outline-none focus:bg-white focus:-translate-y-1 focus:shadow-neo-sm transition-all" />
+          {errors.slug && <span className="text-red-500 font-bold uppercase text-sm mt-1 block">Required</span>}
+        </div>
+
+        <div className="bg-gray-50 p-6 border-black">
+          <ImageUpload 
+            label="Cover Image (Upload)" 
+            value={watch('cover_image')} 
+            onChange={(url) => setValue('cover_image', url)} 
+            folder="blog" 
+          />
+        </div>
+
+        <div className="flex items-center bg-accent-2 p-6 border-black">
+          <input type="checkbox" {...register('published')} id="published" className="h-6 w-6 border-black accent-black cursor-pointer" />
+          <label htmlFor="published" className="ml-3 text-lg font-black uppercase tracking-wider cursor-pointer">Published</label>
         </div>
 
         <div>
-          <label className="block text-sm font-semibold mb-1">Cover Image URL</label>
-          <input {...register('cover_image')} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black" />
-        </div>
-
-        <div className="flex items-center mb-6">
-          <input type="checkbox" {...register('published')} id="published" className="mr-2 h-4 w-4" />
-          <label htmlFor="published" className="text-sm font-semibold">Published</label>
-        </div>
-
-        <div>
-          <label className="block text-sm font-semibold mb-1">Content (Markdown)</label>
-          <div data-color-mode="light">
+          <label className="block text-sm font-black uppercase tracking-wider mb-2">Content (Markdown)</label>
+          <div data-color-mode="light" className="border-black border-4 shadow-neo-sm">
             <MDEditor
               value={content}
               onChange={setContent}
@@ -89,12 +94,12 @@ export default function BlogPostForm() {
           </div>
         </div>
 
-        <div className="pt-4 flex gap-4">
-          <button type="submit" disabled={saving} className="bg-black text-white px-6 py-2 rounded-md font-semibold hover:bg-gray-800 disabled:opacity-50">
-            {saving ? 'Saving...' : 'Save Post'}
+        <div className="pt-8 flex flex-wrap gap-4 border-t-4 border-black mt-8">
+          <button type="submit" disabled={saving} className="neo-btn neo-btn-primary disabled:opacity-50">
+            {saving ? 'SAVING...' : 'SAVE POST'}
           </button>
-          <button type="button" onClick={() => navigate('/admin/blog')} className="bg-gray-200 text-gray-800 px-6 py-2 rounded-md font-semibold hover:bg-gray-300">
-            Cancel
+          <button type="button" onClick={() => navigate('/admin/blog')} className="neo-btn bg-white">
+            CANCEL
           </button>
         </div>
       </form>

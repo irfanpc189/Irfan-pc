@@ -17,13 +17,42 @@ export default function ProjectsSection() {
 
   useEffect(() => {
     async function fetchProjects() {
-      const { data } = await supabase
-        .from('projects')
-        .select('*')
-        .eq('published', true)
-        .order('sort_order', { ascending: true });
-      
-      if (data) setProjects(data);
+      try {
+        const { data, error } = await supabase
+          .from('projects')
+          .select('*')
+          .eq('published', true)
+          .order('sort_order', { ascending: true });
+        
+        if (error) throw error;
+        if (data && data.length > 0) {
+          setProjects(data);
+        } else {
+          throw new Error("No projects found");
+        }
+      } catch (err) {
+        console.error("Error fetching projects, using fallback:", err.message);
+        setProjects([
+          {
+            id: 'fallback-1',
+            title: 'Mock Project 1',
+            description: 'This is a fallback project displaying because the database is currently unreachable. Configure your Supabase tables to replace this.',
+            tags: ['React', 'Tailwind'],
+            image_url: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80',
+            live_url: '#',
+            updated_at: new Date().toISOString()
+          },
+          {
+            id: 'fallback-2',
+            title: 'Mock Project 2',
+            description: 'This is another fallback project. Set up your Supabase backend to make this dynamic.',
+            tags: ['UI/UX', 'Figma'],
+            image_url: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?auto=format&fit=crop&w=800&q=80',
+            live_url: '#',
+            updated_at: new Date().toISOString()
+          }
+        ]);
+      }
     }
     fetchProjects();
   }, []);

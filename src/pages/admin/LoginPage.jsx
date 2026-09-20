@@ -27,43 +27,50 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div className="max-w-md w-full bg-white rounded-lg shadow p-8">
-        <h1 className="text-2xl font-black uppercase text-center mb-6">Admin Login</h1>
+    <div className="min-h-screen bg-primary flex flex-col items-center justify-center p-4">
+      
+      {/* Decorative tag */}
+      <div className="mb-8 inline-flex items-center gap-2 neo-tag bg-accent-2 text-white border-black transform -rotate-2">
+        <span className="font-bold uppercase tracking-widest">AUTHORIZED PERSONNEL ONLY</span>
+      </div>
+
+      <div className="max-w-md w-full bg-white border-black shadow-neo-xl p-8 sm:p-12">
+        <h1 className="text-4xl font-display font-black uppercase text-center mb-8" style={{ textShadow: '2px 2px 0px var(--color-accent-1)' }}>SYSTEM LOGIN</h1>
         
         {error && (
-          <div className="bg-red-50 text-red-600 p-3 rounded-md mb-4 text-sm">
+          <div className="bg-accent-2 text-white border-black p-4 mb-6 font-bold uppercase shadow-neo">
             {error}
           </div>
         )}
 
-        <form onSubmit={handleLogin} className="space-y-4">
-          <div>
-            <label className="block text-sm font-semibold mb-1">Email</label>
+        <form onSubmit={handleLogin} className="flex flex-col gap-6 w-full max-w-md">
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-black uppercase tracking-wider">Email Address</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+              className="w-full px-4 py-4 bg-white border-black font-bold shadow-neo focus:outline-none focus:-translate-y-1 transition-all"
               required
             />
           </div>
-          <div>
-            <label className="block text-sm font-semibold mb-1">Password</label>
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-black uppercase tracking-wider">Password</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+              className="w-full px-4 py-4 bg-white border-black font-bold shadow-neo focus:outline-none focus:-translate-y-1 transition-all"
               required
             />
           </div>
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-black text-white font-bold py-2 rounded-md hover:bg-gray-800 transition-colors disabled:opacity-50"
+            className="w-full group neo-btn bg-black text-white text-xl py-4 mt-8 disabled:opacity-50 flex justify-center items-center gap-2"
           >
-            {loading ? 'Logging in...' : 'Log In'}
+            <span>{loading ? 'AUTHENTICATING...' : 'ACCESS GRANTED'}</span>
+            {!loading && <span className="group-hover:translate-x-1 transition-transform">→</span>}
           </button>
         </form>
       </div>

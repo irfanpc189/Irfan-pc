@@ -1,7 +1,30 @@
-import React from 'react';
-import { Mail, ArrowUpRight } from 'lucide-react';
+import React, { useState } from 'react';
+import { Mail, ArrowUpRight, Send } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 export default function ContactSection() {
+  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+  const [status, setStatus] = useState('idle'); // idle, loading, success, error
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setStatus('loading');
+    
+    try {
+      const { error } = await supabase.from('messages').insert([formData]);
+      if (error) throw error;
+      setStatus('success');
+      setFormData({ name: '', email: '', message: '' });
+    } catch (err) {
+      console.error("Error sending message:", err.message);
+      setStatus('error');
+    }
+  };
+
+  const handleChange = (e) => {
+    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
   return (
     <section 
       id="contact" 
@@ -28,17 +51,68 @@ export default function ContactSection() {
           <span className="font-display font-black text-3xl sm:text-4xl text-primary bg-accent-1 px-2 border-2 border-black rounded shadow-[2px_2px_0px_#000] inline-block mt-2 transform -rotate-1">Let's create something meaningful.</span>
         </p>
 
-        <a 
-          href="mailto:pcirfan918@gmail.com"
-          className="group inline-flex items-center justify-center neo-btn mb-16 text-lg"
-          style={{ padding: '16px 32px', gap: '12px', textDecoration: 'none' }}
-        >
-          <span style={{ textDecoration: 'none' }}>Get in touch</span>
-          <ArrowUpRight className="w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-        </a>
+        {status === 'success' ? (
+          <div className="neo-card bg-accent-1 p-8 mb-16 max-w-lg w-full transform rotate-1">
+            <h3 className="font-display font-black text-3xl uppercase mb-2">Message Sent!</h3>
+            <p className="font-bold">Thanks for reaching out. I'll get back to you soon.</p>
+            <button onClick={() => setStatus('idle')} className="mt-6 neo-btn bg-black text-white text-sm">Send Another</button>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="w-full max-w-lg text-left flex flex-col gap-6 mb-16 bg-white p-8 border-4 border-black shadow-[8px_8px_0px_#000]">
+            <div>
+              <label className="block text-sm font-black uppercase tracking-wider mb-2">Name</label>
+              <input 
+                type="text" 
+                name="name"
+                required
+                value={formData.name}
+                onChange={handleChange}
+                className="w-full px-4 py-3 bg-gray-50 border-2 border-black font-bold focus:outline-none focus:bg-white focus:-translate-y-1 focus:shadow-[4px_4px_0px_#000] transition-all" 
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-black uppercase tracking-wider mb-2">Email</label>
+              <input 
+                type="email" 
+                name="email"
+                required
+                value={formData.email}
+                onChange={handleChange}
+                className="w-full px-4 py-3 bg-gray-50 border-2 border-black font-bold focus:outline-none focus:bg-white focus:-translate-y-1 focus:shadow-[4px_4px_0px_#000] transition-all" 
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-black uppercase tracking-wider mb-2">Message</label>
+              <textarea 
+                name="message"
+                required
+                rows={4}
+                value={formData.message}
+                onChange={handleChange}
+                className="w-full px-4 py-3 bg-gray-50 border-2 border-black font-bold focus:outline-none focus:bg-white focus:-translate-y-1 focus:shadow-[4px_4px_0px_#000] transition-all resize-none" 
+              />
+            </div>
+
+            {status === 'error' && (
+              <div className="bg-red-500 text-white p-4 font-bold border-2 border-black">
+                There was a problem sending your message. Please try again or email me directly at <a href="mailto:pcirfan918@gmail.com" className="underline">pcirfan918@gmail.com</a>.
+              </div>
+            )}
+
+            <button 
+              type="submit" 
+              disabled={status === 'loading'}
+              className="group inline-flex items-center justify-center neo-btn text-lg mt-4 disabled:opacity-75"
+              style={{ padding: '16px 32px', gap: '12px' }}
+            >
+              <span>{status === 'loading' ? 'SENDING...' : 'SEND MESSAGE'}</span>
+              {!status.loading && <Send className="w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />}
+            </button>
+          </form>
+        )}
 
         <div className="flex items-center justify-center gap-6 mb-12">
-          <a href="mailto:pcirfan918@gmail.com" className="p-4 rounded-full neo-card bg-white hover:bg-accent-1 transition-colors text-black shadow-[4px_4px_0px_#000]">
+          <a href="mailto:pcirfan918@gmail.com" className="p-4 rounded-full neo-card bg-white hover:bg-accent-1 transition-colors text-black shadow-[4px_4px_0px_#000]" title="Email me directly">
             <Mail className="w-6 h-6" />
           </a>
         </div>
