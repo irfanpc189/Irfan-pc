@@ -151,6 +151,18 @@ export default function HeroScene() {
           pointer-events: none;
           overflow: hidden;
         }
+        @media (max-width: 767px) {
+          .hero-portrait-layer {
+            display: none !important;
+          }
+        }
+        @media (min-width: 768px) and (max-width: 1023px) {
+          .tablet-hero-portrait {
+            width: clamp(240px, 45vw, 600px) !important;
+            height: clamp(360px, 50vh, 650px) !important;
+            max-height: 55vh !important;
+          }
+        }
       `}</style>
       
       <div 
@@ -254,7 +266,7 @@ export default function HeroScene() {
         </div>
 
         {/* Portrait Image Layer */}
-        <div className="hero-portrait-layer" ref={portraitContainerRef}>
+        <div className="hero-portrait-layer tablet-hero-portrait" ref={portraitContainerRef}>
           <div 
             ref={portraitFloatRef} 
             className="absolute" 

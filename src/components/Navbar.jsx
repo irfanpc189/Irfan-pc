@@ -63,10 +63,23 @@ export default function Navbar() {
 
   return (
     <header className="fixed top-6 left-1/2 -translate-x-1/2 z-[1000] w-full max-w-[800px] flex flex-wrap items-center justify-center gap-2 px-4">
+      <style>{`
+        @media (max-width: 450px) {
+          .mobile-nav-btn {
+            padding: 0.4rem 0.25rem !important;
+            font-size: 0.65rem !important;
+            border-width: 2px !important;
+            letter-spacing: 0.05em !important;
+          }
+          .mobile-nav-container {
+            padding: 0.25rem !important;
+          }
+        }
+      `}</style>
       
       {/* Main Nav Block */}
       <div 
-        className="flex items-center bg-white border-[3px] border-black px-2 py-2 shadow-[8px_8px_0px_#000] hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-[4px_4px_0px_#000] transition-all duration-200"
+        className="flex items-center bg-white border-[3px] border-black px-2 py-2 shadow-[8px_8px_0px_#000] hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-[4px_4px_0px_#000] transition-all duration-200 mobile-nav-container"
       >
         {/* Links */}
         <div className="flex items-center gap-1 sm:gap-2">
@@ -76,7 +89,7 @@ export default function Navbar() {
               <button
                 key={link.id}
                 onClick={() => handleNavClick(link.id)}
-                className={`px-4 py-2 text-sm font-black tracking-widest uppercase transition-all duration-200 border-[3px] cursor-pointer ${
+                className={`px-4 py-2 text-sm font-black tracking-widest uppercase transition-all duration-200 border-[3px] cursor-pointer mobile-nav-btn ${
                   active 
                     ? 'bg-primary text-white border-black shadow-[2px_2px_0px_#000]' 
                     : 'hover:bg-accent-1 hover:border-black text-black border-transparent'

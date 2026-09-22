@@ -90,6 +90,19 @@ export default function AboutPage() {
 
   return (
     <div className="w-full min-h-screen bg-white text-black font-body selection:bg-accent-1 selection:text-black pb-12 relative overflow-x-hidden">
+      <style>{`
+        @media (max-width: 767px) {
+          .about-mobile-hide { display: none !important; }
+          .about-mobile-hero-wrapper { max-width: 100% !important; margin-bottom: 2rem !important; }
+          .about-mobile-hero-heading { font-size: clamp(2.5rem, 12vw, 4.5rem) !important; }
+          .about-mobile-hero-sub { font-size: clamp(1.25rem, 6vw, 2.5rem) !important; }
+        }
+        @media (min-width: 768px) and (max-width: 1023px) {
+          .about-mobile-hero-heading { font-size: 3.5rem !important; }
+          .about-mobile-hero-sub { font-size: 2rem !important; }
+          .about-mobile-hero-wrapper { max-width: 55vw !important; }
+        }
+      `}</style>
       {/* Back Button */}
       <Link 
         to="/" 
@@ -118,19 +131,19 @@ export default function AboutPage() {
           </div>
           
           {/* Typography Wrapper (Left Column Isolation) */}
-          <div className="relative z-20 max-w-[45vw]">
+          <div className="relative z-20 max-w-[45vw] about-mobile-hero-wrapper">
             {/* Headline - 4 lines for more aggressive scale */}
             <h1 
-              className="font-display font-black text-6xl sm:text-7xl lg:text-[7rem] uppercase leading-[0.85] text-white tracking-tight mb-8"
+              className="font-display font-black text-6xl sm:text-7xl lg:text-[7rem] uppercase leading-[0.85] text-white tracking-tight mb-8 about-mobile-hero-heading"
               style={{ textShadow: '8px 8px 0px var(--color-black)' }}
             >
-              I DESIGN LIKE A<br />DEVELOPER.<br /><br />
-              AND CODE LIKE A<br />DESIGNER.
+              I DESIGN LIKE&nbsp;A<br />DEVELOPER.<br /><br />
+              AND CODE LIKE&nbsp;A<br />DESIGNER.
             </h1>
             
             {/* Role Typography */}
             <h2 
-              className="font-display font-black text-3xl sm:text-4xl lg:text-5xl uppercase text-white tracking-wide" 
+              className="font-display font-black text-3xl sm:text-4xl lg:text-5xl uppercase text-white tracking-wide about-mobile-hero-sub" 
               style={{ textShadow: '4px 4px 0px var(--color-black)' }}
             >
               DESIGNER <span className="text-accent-2 font-black">+</span> FRONTEND DEV
@@ -154,6 +167,7 @@ export default function AboutPage() {
         {/* Unboxed Large Portrait Layer (Overlapping composition) */}
         <div 
           ref={portraitContainerRef}
+          className="about-mobile-hide"
           style={{
             position: 'absolute',
             bottom: '0px',
