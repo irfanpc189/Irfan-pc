@@ -10,11 +10,46 @@ export default function ContactPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setStatus('submitting');
-    const { error } = await supabase.from('messages').insert([formData]);
-    if (!error) {
+    
+    try {
+      const payload = { ...formData, email: formData.email.trim().toLowerCase() };
+      
+      // 1. Save to Supabase
+      const { error: supabaseError } = await supabase.from('messages').insert([payload]);
+      if (supabaseError) throw supabaseError;
+
+      // 2. Send notification via Web3Forms
+      const web3formsPayload = {
+        access_key: import.meta.env.VITE_WEB3FORMS_ACCESS_KEY,
+        name: formData.name,
+        email: formData.email,
+        message: formData.message,
+        subject: "New Portfolio Contact Enquiry",
+        from_name: "IRFAN PC Portfolio",
+        replyto: formData.email
+      };
+
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify(web3formsPayload),
+      });
+
+      const result = await response.json();
+      if (!response.ok || !result.success) {
+        console.error("Web3Forms error:", result);
+        setStatus('error');
+        return; // Exit early, do not clear form data
+      }
+
+      // Both succeeded
       setStatus('success');
       setFormData({ name: '', email: '', message: '' });
-    } else {
+    } catch (err) {
+      console.error("Error sending message:", err.message || err);
       setStatus('error');
     }
   };
@@ -81,7 +116,7 @@ export default function ContactPage() {
                 required 
                 value={formData.email}
                 onChange={e => setFormData({...formData, email: e.target.value})}
-                className="w-full sm:w-1/2 p-4 bg-white text-black border-[3px] border-black font-bold uppercase shadow-[4px_4px_0px_#000] focus:outline-none focus:-translate-y-1 focus:shadow-[6px_6px_0px_#000] transition-all"
+                className="w-full sm:w-1/2 p-4 bg-white text-black border-[3px] border-black font-bold placeholder:uppercase shadow-[4px_4px_0px_#000] focus:outline-none focus:-translate-y-1 focus:shadow-[6px_6px_0px_#000] transition-all"
               />
             </div>
             <textarea 

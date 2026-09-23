@@ -11,12 +11,59 @@ export default function ContactSection() {
     setStatus('loading');
     
     try {
-      const { error } = await supabase.from('messages').insert([formData]);
-      if (error) throw error;
+      const payload = { ...formData, email: formData.email.trim().toLowerCase() };
+      
+      // 1. Save to Supabase
+      const { error: supabaseError } = await supabase.from('messages').insert([payload]);
+      if (supabaseError) throw supabaseError;
+
+      console.log("SUPABASE INSERT SUCCESS");
+
+      // 2. Send notification via Web3Forms
+      const web3formsPayload = {
+        access_key: import.meta.env.VITE_WEB3FORMS_ACCESS_KEY,
+        name: formData.name,
+        email: formData.email,
+        message: formData.message,
+        subject: "New Portfolio Contact Enquiry",
+        from_name: "IRFAN PC Portfolio",
+        replyto: formData.email
+      };
+
+      console.log("WEB3FORMS REQUEST STARTED");
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify(web3formsPayload),
+      });
+
+      console.log("WEB3FORMS STATUS:", response.status);
+
+      const rawResponse = await response.text();
+      console.log("WEB3FORMS RAW RESPONSE:", rawResponse);
+
+      let result;
+      try {
+        result = JSON.parse(rawResponse);
+        console.log("WEB3FORMS PARSED RESULT:", result);
+      } catch (parseError) {
+        console.error("WEB3FORMS RESPONSE IS NOT JSON:", parseError);
+      }
+
+      if (!response.ok || !result?.success) {
+        console.error("WEB3FORMS ERROR:", result || rawResponse);
+        setStatus('error');
+        return; // Exit early, do not clear form data
+      }
+
+      // Both succeeded
       setStatus('success');
       setFormData({ name: '', email: '', message: '' });
     } catch (err) {
-      console.error("Error sending message:", err.message);
+      console.error("Error sending message:", err.message || err);
       setStatus('error');
     }
   };
@@ -60,8 +107,9 @@ export default function ContactSection() {
         ) : (
           <form onSubmit={handleSubmit} className="w-full max-w-lg text-left flex flex-col gap-6 mb-16 bg-white p-8 border-4 border-black shadow-[8px_8px_0px_#000]">
             <div>
-              <label className="block text-sm font-black uppercase tracking-wider mb-2">Name</label>
+              <label htmlFor="name" className="block text-sm font-black uppercase tracking-wider mb-2">Name</label>
               <input 
+                id="name"
                 type="text" 
                 name="name"
                 required
@@ -71,8 +119,9 @@ export default function ContactSection() {
               />
             </div>
             <div>
-              <label className="block text-sm font-black uppercase tracking-wider mb-2">Email</label>
+              <label htmlFor="email" className="block text-sm font-black uppercase tracking-wider mb-2">Email</label>
               <input 
+                id="email"
                 type="email" 
                 name="email"
                 required
@@ -82,8 +131,9 @@ export default function ContactSection() {
               />
             </div>
             <div>
-              <label className="block text-sm font-black uppercase tracking-wider mb-2">Message</label>
+              <label htmlFor="message" className="block text-sm font-black uppercase tracking-wider mb-2">Message</label>
               <textarea 
+                id="message"
                 name="message"
                 required
                 rows={4}
