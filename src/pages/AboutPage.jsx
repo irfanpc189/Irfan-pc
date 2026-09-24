@@ -4,6 +4,9 @@ import { Link } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import heroImg from '../assets/irfan-portrait-new.png';
+import heroImgLarge from '../assets/irfan-portrait-new-large.webp';
+import heroImgMedium from '../assets/irfan-portrait-new-medium.webp';
+import heroImgSmall from '../assets/irfan-portrait-new-small.webp';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -177,19 +180,26 @@ export default function AboutPage() {
           }}
         >
           <div ref={portraitFloatRef}>
-            <img 
-              ref={portraitImgRef}
-              src={heroImg} 
-              alt="Irfan PC" 
-              style={{
-                maxHeight: '75vh',
-                maxWidth: '48vw',
-                width: 'auto',
-                height: 'auto',
-                objectFit: 'contain',
-                objectPosition: 'bottom right'
-              }} 
-            />
+            <picture>
+              <source media="(max-width: 767px)" srcSet={heroImgSmall} type="image/webp" />
+              <source media="(max-width: 1023px)" srcSet={heroImgMedium} type="image/webp" />
+              <source media="(min-width: 1024px)" srcSet={heroImgLarge} type="image/webp" />
+              <img 
+                ref={portraitImgRef}
+                src={heroImg} 
+                alt="Irfan PC" 
+                style={{
+                  maxHeight: '75vh',
+                  maxWidth: '48vw',
+                  width: 'auto',
+                  height: 'auto',
+                  objectFit: 'contain',
+                  objectPosition: 'bottom right'
+                }} 
+                fetchpriority="high"
+                loading="eager"
+              />
+            </picture>
           </div>
         </div>
 

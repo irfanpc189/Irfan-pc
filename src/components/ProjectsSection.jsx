@@ -161,6 +161,7 @@ export default function ProjectsSection() {
                       src={project.image_url}
                       alt={project.title}
                       className="w-full h-full object-cover filter contrast-125 grayscale-[20%]"
+                      loading="lazy"
                     />
                   )}
                 </div>

@@ -3,6 +3,9 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Link } from 'react-router-dom';
 import heroImg from '../assets/hero-portrait.png';
+import heroImgLarge from '../assets/hero-portrait-large.webp';
+import heroImgMedium from '../assets/hero-portrait-medium.webp';
+import heroImgSmall from '../assets/hero-portrait-small.webp';
 
 const InstagramIcon = ({ className }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
@@ -272,12 +275,19 @@ export default function HeroScene() {
             className="absolute" 
             style={{ width: 'calc(100% + 60px)', height: 'calc(100% + 60px)', bottom: '-30px', left: '-30px' }}
           >
-            <img 
-              ref={portraitImgRef}
-              src={heroImg} 
-              alt="My Portrait" 
-              className="w-full h-full object-cover object-top" 
-            />
+            <picture>
+              <source media="(max-width: 767px)" srcSet={heroImgSmall} type="image/webp" />
+              <source media="(max-width: 1023px)" srcSet={heroImgMedium} type="image/webp" />
+              <source media="(min-width: 1024px)" srcSet={heroImgLarge} type="image/webp" />
+              <img 
+                ref={portraitImgRef}
+                src={heroImg} 
+                alt="My Portrait" 
+                className="w-full h-full object-cover object-top" 
+                fetchpriority="high"
+                loading="eager"
+              />
+            </picture>
           </div>
         </div>
 
