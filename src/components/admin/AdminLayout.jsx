@@ -1,7 +1,7 @@
 import React from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
-import { LayoutDashboard, FolderKanban, FileText, Mail, Settings, LogOut } from 'lucide-react';
+import { LayoutDashboard, FolderKanban, FileText, Mail, Settings, LogOut, Briefcase } from 'lucide-react';
 
 export default function AdminLayout() {
   const navigate = useNavigate();
@@ -15,6 +15,7 @@ export default function AdminLayout() {
   const navItems = [
     { name: 'Dashboard', path: '/admin', icon: LayoutDashboard },
     { name: 'Projects', path: '/admin/projects', icon: FolderKanban },
+    { name: 'Case Studies', path: '/admin/case-studies', icon: Briefcase },
     { name: 'Blog', path: '/admin/blog', icon: FileText },
     { name: 'Messages', path: '/admin/messages', icon: Mail },
     { name: 'Settings', path: '/admin/settings', icon: Settings },

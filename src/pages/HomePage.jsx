@@ -3,6 +3,7 @@ import HeroScene from '../components/HeroScene';
 import AboutSection from '../components/AboutSection';
 import ServicesSection from '../components/ServicesSection';
 import ProjectsSection from '../components/ProjectsSection';
+import CaseStudiesSection from '../components/CaseStudiesSection';
 import SkillsSection from '../components/SkillsSection';
 import WorkflowSection from '../components/WorkflowSection';
 import DesignCodeSection from '../components/DesignCodeSection';
@@ -16,6 +17,7 @@ export default function HomePage() {
       <WorkflowSection />
       <DesignCodeSection />
       <ProjectsSection />
+      <CaseStudiesSection />
       <SkillsSection />
     </div>
   );

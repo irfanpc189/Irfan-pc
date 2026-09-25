@@ -8,6 +8,8 @@ import Navbar from './components/Navbar';
 import HomePage from './pages/HomePage';
 import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
+import PublicCaseStudiesPage from './pages/PublicCaseStudiesPage';
+import PublicCaseStudyDetail from './pages/PublicCaseStudyDetail';
 
 // Admin Pages (Lazy Loaded)
 const ProtectedRoute = lazy(() => import('./components/admin/ProtectedRoute'));
@@ -20,6 +22,8 @@ const BlogPage = lazy(() => import('./pages/admin/BlogPage'));
 const BlogPostForm = lazy(() => import('./pages/admin/BlogPostForm'));
 const MessagesPage = lazy(() => import('./pages/admin/MessagesPage'));
 const SettingsPage = lazy(() => import('./pages/admin/SettingsPage'));
+const CaseStudiesPage = lazy(() => import('./pages/admin/CaseStudiesPage'));
+const CaseStudyForm = lazy(() => import('./pages/admin/CaseStudyForm'));
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -74,6 +78,8 @@ export default function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<ContactPage />} />
+          <Route path="/case-studies" element={<PublicCaseStudiesPage />} />
+          <Route path="/case-studies/:slug" element={<PublicCaseStudyDetail />} />
 
           {/* Admin Routes */}
           <Route path="/admin/login" element={
@@ -91,6 +97,9 @@ export default function App() {
               <Route path="projects" element={<ProjectsPage />} />
               <Route path="projects/new" element={<ProjectForm />} />
               <Route path="projects/:id" element={<ProjectForm />} />
+              <Route path="case-studies" element={<CaseStudiesPage />} />
+              <Route path="case-studies/new" element={<CaseStudyForm />} />
+              <Route path="case-studies/:id" element={<CaseStudyForm />} />
               <Route path="blog" element={<BlogPage />} />
               <Route path="blog/new" element={<BlogPostForm />} />
               <Route path="blog/:id" element={<BlogPostForm />} />
