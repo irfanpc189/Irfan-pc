@@ -4,11 +4,9 @@ import Lenis from '@studio-freight/lenis';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-import Navbar from './components/Navbar';
 import HomePage from './pages/HomePage';
 import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
-import PublicCaseStudiesPage from './pages/PublicCaseStudiesPage';
 import PublicCaseStudyDetail from './pages/PublicCaseStudyDetail';
 
 // Admin Pages (Lazy Loaded)
@@ -68,8 +66,7 @@ export default function App() {
   return (
     <div className="relative min-h-screen font-body bg-grid">
       
-      {/* Navigation Bar */}
-      <Navbar />
+      {/* Navigation Bar Removed */}
 
       {/* Main Routes */}
       <main className={`relative z-10 ${location.pathname === '/' || location.pathname.startsWith('/admin') ? '' : 'pt-24'}`}>
@@ -78,7 +75,6 @@ export default function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<ContactPage />} />
-          <Route path="/case-studies" element={<PublicCaseStudiesPage />} />
           <Route path="/case-studies/:slug" element={<PublicCaseStudyDetail />} />
 
           {/* Admin Routes */}

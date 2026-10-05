@@ -103,22 +103,36 @@ export default function CaseStudyForm() {
     // Insert new relations
     const insertData = async (table, items) => {
       if (items && items.length > 0) {
-        const toInsert = items.map((item, index) => ({
-          ...item,
-          id: undefined, // let supabase generate it
-          case_study_id: csId,
-          display_order: index
-        }));
-        await supabase.from(table).insert(toInsert);
+        const toInsert = items.map((item, index) => {
+          // Remove supabase generated fields so we don't violate schema on re-insert
+          const { id, created_at, updated_at, ...rest } = item;
+          return {
+            ...rest,
+            case_study_id: csId,
+            display_order: index
+          };
+        });
+        
+        const { error } = await supabase.from(table).insert(toInsert);
+        if (error) {
+          console.error(`Error inserting into ${table}:`, error);
+          throw new Error(`Failed to save ${table}: ${error.message}`);
+        }
       }
     };
 
-    await Promise.all([
-      insertData('case_study_sections', data.sections),
-      insertData('case_study_insights', data.insights),
-      insertData('case_study_goals', data.goals),
-      insertData('case_study_images', data.images)
-    ]);
+    try {
+      await Promise.all([
+        insertData('case_study_sections', data.sections),
+        insertData('case_study_insights', data.insights),
+        insertData('case_study_goals', data.goals),
+        insertData('case_study_images', data.images)
+      ]);
+    } catch (err) {
+      alert(err.message);
+      setSaving(false);
+      return;
+    }
 
     setSaving(false);
     navigate('/admin/case-studies');
