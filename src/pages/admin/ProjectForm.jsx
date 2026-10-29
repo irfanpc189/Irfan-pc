@@ -9,7 +9,18 @@ export default function ProjectForm() {
   const navigate = useNavigate();
   const isEditing = id !== undefined;
   
-  const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm();
+  const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm({
+    defaultValues: {
+      title: '',
+      slug: '',
+      description: '',
+      tags: '',
+      image_url: '',
+      live_url: '',
+      sort_order: 0,
+      published: true
+    }
+  });
   const [loading, setLoading] = useState(isEditing);
   const [saving, setSaving] = useState(false);
 
@@ -20,28 +31,59 @@ export default function ProjectForm() {
   }, [id]);
 
   async function fetchProject() {
-    const { data } = await supabase.from('projects').select('*').eq('id', id).single();
-    if (data) {
-      Object.keys(data).forEach(key => setValue(key, data[key]));
+    try {
+      const { data, error } = await supabase.from('projects').select('*').eq('id', id).single();
+      if (error) throw error;
+      if (data) {
+        Object.keys(data).forEach(key => {
+          if (key === 'tags' && Array.isArray(data[key])) {
+            setValue('tags', data[key].join(', '));
+          } else {
+            setValue(key, data[key]);
+          }
+        });
+      }
+    } catch (err) {
+      console.error('Error fetching project:', err.message);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   const onSubmit = async (data) => {
     setSaving(true);
     
     // Process tags string to array if needed (assuming comma separated)
+    let formattedTags = [];
     if (typeof data.tags === 'string') {
-      data.tags = data.tags.split(',').map(t => t.trim()).filter(Boolean);
+      formattedTags = data.tags.split(',').map(t => t.trim()).filter(Boolean);
+    } else if (Array.isArray(data.tags)) {
+      formattedTags = data.tags;
     }
+
+    const sortOrder = 
+      data.sort_order === '' || data.sort_order === null || data.sort_order === undefined || isNaN(Number(data.sort_order))
+        ? 0
+        : parseInt(data.sort_order, 10);
+
+    const projectData = {
+      title: data.title,
+      slug: data.slug,
+      description: data.description || '',
+      tags: formattedTags,
+      image_url: data.image_url || '',
+      live_url: data.live_url || '',
+      sort_order: sortOrder,
+      published: Boolean(data.published)
+    };
 
     let errorResult = null;
 
     if (isEditing) {
-      const { error } = await supabase.from('projects').update(data).eq('id', id);
+      const { error } = await supabase.from('projects').update(projectData).eq('id', id);
       errorResult = error;
     } else {
-      const { error } = await supabase.from('projects').insert([data]);
+      const { error } = await supabase.from('projects').insert([projectData]);
       errorResult = error;
     }
     
