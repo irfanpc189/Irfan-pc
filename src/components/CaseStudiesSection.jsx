@@ -60,12 +60,16 @@ export default function CaseStudiesSection() {
         <div className="grid grid-cols-1 gap-12 mb-16">
           {caseStudies.map((cs, index) => (
             <article key={cs.id} className="group flex flex-col md:flex-row bg-white border-4 border-black shadow-[8px_8px_0px_#000] hover:shadow-[12px_12px_0px_#000] transition-shadow duration-300">
-              <div className="w-full md:w-5/12 border-b-4 md:border-b-0 md:border-r-4 border-black overflow-hidden bg-gray-100 min-h-[300px]">
+              <div 
+                className="w-full md:w-5/12 border-b-4 md:border-b-0 md:border-r-4 border-black overflow-hidden flex items-center justify-center min-h-[300px] bg-[#F7F5F0]"
+                style={{ backgroundColor: '#F7F5F0' }}
+              >
                 {cs.cover_image && (
                   <img
                     src={cs.cover_image}
                     alt={cs.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 transform-gpu will-change-transform"
+                    className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 transform-gpu will-change-transform"
+                    style={{ objectFit: 'contain' }}
                     loading="lazy"
                     decoding="async"
                   />
